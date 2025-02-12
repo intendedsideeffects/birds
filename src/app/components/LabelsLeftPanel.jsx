@@ -1,30 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 
 function LabelsLeftPanel({labelsHidden, setLabelsHidden}) {
-  const [isScatterplotVisible, setIsScatterplotVisible] = useState(false);
-
-  useEffect(() => {
-    const checkScatterplotVisibility = () => {
-      const scatterplot = document.getElementById('plot-container');
-      if (scatterplot) {
-        const rect = scatterplot.getBoundingClientRect();
-        const isVisible = 
-          rect.top < window.innerHeight &&
-          rect.bottom >= 0;
-        setIsScatterplotVisible(isVisible);
-      }
-    };
-
-    // Check visibility on scroll
-    window.addEventListener('scroll', checkScatterplotVisibility);
-    // Check initial visibility
-    checkScatterplotVisibility();
-
-    return () => window.removeEventListener('scroll', checkScatterplotVisibility);
-  }, []);
-
-  if (!isScatterplotVisible) return null;
-
   return (
     <div
       className={labelsHidden ? 'sliding-panel' : 'sliding-panel open'}
@@ -52,7 +28,7 @@ function LabelsLeftPanel({labelsHidden, setLabelsHidden}) {
                 width: '8px',
                 height: '8px',
                 borderRadius: '50%',
-                backgroundColor: '#D3D3D3',
+                backgroundColor: '#999999',
                 marginRight: '8px',
               }}></span>
             <span className="dot-labels-wrapper" style={{ fontSize: '12px' }}>
@@ -71,7 +47,7 @@ function LabelsLeftPanel({labelsHidden, setLabelsHidden}) {
                 width: '16px',
                 height: '16px',
                 borderRadius: '50%',
-                backgroundColor: '#D3D3D3',
+                backgroundColor: '#999999',
                 marginRight: '8px',
               }}></span>
             <span className="dot-labels-wrapper" style={{ fontSize: '12px' }}>
@@ -90,7 +66,7 @@ function LabelsLeftPanel({labelsHidden, setLabelsHidden}) {
                 width: '32px',
                 height: '32px',
                 borderRadius: '50%',
-                backgroundColor: '#D3D3D3',
+                backgroundColor: '#999999',
                 marginRight: '8px',
               }}></span>
             <span className="dot-labels-wrapper" style={{ fontSize: '12px' }}>
@@ -112,7 +88,7 @@ function LabelsLeftPanel({labelsHidden, setLabelsHidden}) {
                 width: '16px',
                 height: '16px',
                 borderRadius: '50%',
-                backgroundColor: '#D3D3D3',
+                backgroundColor: '#000000',
                 marginRight: '8px',
               }}></span>
             <span className="dot-labels-wrapper" style={{ fontSize: '12px' }}>
@@ -131,7 +107,7 @@ function LabelsLeftPanel({labelsHidden, setLabelsHidden}) {
                 width: '16px',
                 height: '16px',
                 borderRadius: '50%',
-                backgroundColor: '#800080',
+                backgroundColor: '#333333',
                 marginRight: '8px',
               }}></span>
             <span className="dot-labels-wrapper" style={{ fontSize: '12px' }}>
@@ -150,7 +126,7 @@ function LabelsLeftPanel({labelsHidden, setLabelsHidden}) {
                 width: '16px',
                 height: '16px',
                 borderRadius: '50%',
-                backgroundColor: '#FFA07A',
+                backgroundColor: '#666666',
                 marginRight: '8px',
               }}></span>
             <span className="dot-labels-wrapper" style={{ fontSize: '12px' }}>
@@ -169,7 +145,7 @@ function LabelsLeftPanel({labelsHidden, setLabelsHidden}) {
                 width: '16px',
                 height: '16px',
                 borderRadius: '50%',
-                backgroundColor: '#FFB6C1',
+                backgroundColor: '#999999',
                 marginRight: '8px',
               }}></span>
             <span className="dot-labels-wrapper" style={{ fontSize: '12px' }}>
@@ -188,7 +164,7 @@ function LabelsLeftPanel({labelsHidden, setLabelsHidden}) {
                 width: '16px',
                 height: '16px',
                 borderRadius: '50%',
-                backgroundColor: '#FFE5B4',
+                backgroundColor: '#CCCCCC',
                 marginRight: '8px',
               }}></span>
             <span className="dot-labels-wrapper" style={{ fontSize: '12px' }}>
@@ -207,7 +183,8 @@ function LabelsLeftPanel({labelsHidden, setLabelsHidden}) {
                 width: '16px',
                 height: '16px',
                 borderRadius: '50%',
-                backgroundColor: '#A8A8A8',
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #CCCCCC',
                 marginRight: '8px',
               }}></span>
             <span className="dot-labels-wrapper" style={{ fontSize: '12px' }}>

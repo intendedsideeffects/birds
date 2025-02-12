@@ -52,19 +52,28 @@ function PlotsScatterChart({ timelineData, visibleData }) {
         setHoveredDot(null);
     };
 
-    // Create stable references for the data with memoized colors
     const getStableColor = useCallback((status) => {
         return getRegionColor(status);
     }, []);
 
     const stabilizedData = useMemo(() => {
-        return timelineData.map(d => ({
-            ...d,
-            fill: d.fill || getStableColor(d.status),
-            size: d.size || 5,
-            x: Math.round(d.x),
-            y: d.y
-        }));
+        return timelineData.map(d => {
+            // Calculate y-coordinate for extinct birds without dates
+            let yCoord = d.y;
+            if (d.status === "Extinct" && !d.ext_date) {
+                // Convert 2024 to the appropriate y-coordinate using the same scale
+                const scale = STATUS_HEIGHT / (2200 - 1500);
+                yCoord = (2200 - 2024) * scale;
+            }
+            
+            return {
+                ...d,
+                fill: d.fill || getStableColor(d.status),
+                size: d.size || 5,
+                x: Math.round(d.x),
+                y: yCoord
+            };
+        });
     }, [timelineData, getStableColor]);
 
     const stabilizedVisibleData = useMemo(() => {
