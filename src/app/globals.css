@@ -1,0 +1,215 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: black;
+  font-family: Arial, Helvetica, sans-serif;
+}
+@keyframes float-0 {
+  0%, 100% { transform: translateZ(0) translate(0, 0); }
+  50% { transform: translateZ(0) translate(10px, -10px); }
+}
+
+@keyframes float-1 {
+  0%, 100% { transform: translateZ(0) translate(0, 0); }
+  50% { transform: translateZ(0) translate(-10px, 10px); }
+}
+
+@keyframes float-2 {
+  0%, 100% { transform: translateZ(0) translate(0, 0); }
+  50% { transform: translateZ(0) translate(10px, 10px); }
+}
+
+@keyframes float-3 {
+  0%, 100% { transform: translateZ(0) translate(0, 0); }
+  50% { transform: translateZ(0) translate(-15px, -8px); }
+}
+
+@keyframes float-4 {
+  0%, 100% { transform: translateZ(0) translate(0, 0); }
+  50% { transform: translateZ(0) translate(8px, 15px); }
+}
+
+ @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  
+  .dot {
+    animation: fadeIn 0.4s ease-out forwards;
+  }
+.bird-loader-container {
+ 
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+}
+
+.circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: white;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.bird {
+  position: absolute;
+  color: black !important;
+  fill: black;
+  animation: fly 3s infinite linear;
+  opacity: 0;
+  z-index: 1001;
+}
+.zindexx{
+  z-index: 2000;
+  position: relative
+}
+
+.bird-1 { animation-delay: 0s; }
+.bird-2 { animation-delay: 0.375s; }
+.bird-3 { animation-delay: 0.75s; }
+.bird-4 { animation-delay: 1.125s; }
+.bird-5 { animation-delay: 1.5s; }
+.bird-6 { animation-delay: 1.875s; }
+.bird-7 { animation-delay: 2.25s; }
+.bird-8 { animation-delay: 2.625s; }
+
+@keyframes fly {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--tx), var(--ty)) scale(0.2) rotate(var(--rotate));
+    opacity: 0;
+  }
+}
+
+.bird-1 {
+  --tx: 100px;
+  --ty: -100px;
+  --rotate: 45deg;
+}
+
+.bird-2 {
+  --tx: 100px;
+  --ty: 100px;
+  --rotate: 135deg;
+}
+
+.bird-3 {
+  --tx: -100px;
+  --ty: 100px;
+  --rotate: 225deg;
+}
+
+.bird-4 {
+  --tx: -100px;
+  --ty: -100px;
+  --rotate: 315deg;
+}
+
+.bird-5 {
+  --tx: 141px;
+  --ty: 0px;
+  --rotate: 90deg;
+}
+
+.bird-6 {
+  --tx: 0px;
+  --ty: 141px;
+  --rotate: 180deg;
+}
+
+.bird-7 {
+  --tx: -141px;
+  --ty: 0px;
+  --rotate: 270deg;
+}
+
+.bird-8 {
+  --tx: 0px;
+  --ty: -141px;
+  --rotate: 0deg;
+}
+
+.resistance-bg-image {
+  background-image: url('/resistance2.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%;
+  min-height: 500px;
+   
+}
+.dot-labels-wrapper{
+  opacity:0.4;
+ 
+}
+/* .dot-labels-wrapper:hover{
+    pointer-events:auto;
+  opacity:1;
+  
+} */
+.sliding-panel {
+  position: fixed;
+  left: -200px; /* Hidden by default */
+  top: 50%;
+  transform: translateY(-30%);
+  width: 200px;
+  height: 400px;
+  background: none;
+  transition: left 0.3s ease;
+  z-index: 1000;
+}
+
+.sliding-panel.open {
+  left: 0;
+}
+
+.panel-tab {
+  position: absolute;
+  right: -40px;
+  top: 50%;
+  transform: translateY(-90%);
+  width: 40px;
+  height: 120px;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.panel-tab span {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  opacity: 0.4;
+}
+
