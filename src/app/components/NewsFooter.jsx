@@ -1,6 +1,14 @@
 import React from 'react';
 
 function NewsFooter({ news }) {
+  // Ensure news is an array before mapping
+  if (!Array.isArray(news)) {
+    console.error("Error: News data is not an array", news);
+    return <div className="p-40 text-2xl text-red-500">Error loading news data.</div>;
+  }
+
+  console.log("News Data Received:", news); // Debugging log
+
   // Sort news by date in descending order
   const sortedNews = [...news].sort((a, b) => {
     const dateA = a.Snippet ? new Date(a.Snippet.match(/([A-Za-z]{3,} \d{1,2}, \d{4})/)?.[0]) : new Date(0);
@@ -29,10 +37,10 @@ function NewsFooter({ news }) {
           <div
             key={article.Title}
             className="absolute max-w-lg flex flex-col items-start"
-            style={{ top: `calc(${topPosition} + 5rem)`, left: leftPosition, width: '35%' }} // Keeps the 4rem spacing
+            style={{ top: `calc(${topPosition} + 4rem)`, left: leftPosition, width: '35%' }} // Keeps the 4rem spacing
           >
             {/* Display extracted publication date in smaller font */}
-            <p className="text-xl text-gray-500 font-light mb-20">{publishedDate}</p> {/* Increased mb to 8 for a bigger gap */}
+            <p className="text-xl text-gray-500 font-light mb-8">{publishedDate}</p> {/* Increased mb to 8 for a bigger gap */}
             <a
               className="text-6xl font-light italic hover:underline block whitespace-pre-line overflow-hidden text-ellipsis"
               href={article.Link}
@@ -64,6 +72,7 @@ function NewsFooter({ news }) {
 }
 
 export default NewsFooter;
+
 
 
 
