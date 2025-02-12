@@ -25,26 +25,12 @@ export const FloatingDot = React.memo(
     const scale = (Z_RANGE + zPosition) / Z_RANGE;
     const baseSize = r * 1.5;
     const hitboxSize = baseSize * 3;
-    const baseOpacity = 0.25;
-    const opacity = isHovered
-      ? 0.9
-      : Math.max(baseOpacity, Math.min(0.4, scale));
+    const opacity = 1.0; // Set opacity to full
     const blur = Math.max(0, (1 - scale) * 2);
 
-    //the comented out section in the grouStyle variable es for animation if you want for the animation to return just uncomment
     const groupStyle = {
-      // transform: `translateZ(${zPosition}px)`,
-      // willChange: 'transform',
-      // transition: 'filter 0.3s ease-out',
-      // filter: `blur(${blur}px)`,
       cursor: 'pointer',
-      // transformOrigin: `${cx}px ${cy}px`,
-      // animation: isHovered
-      //   ? 'none'
-      //   : `float-${floatPattern} ${duration}s infinite ease-in-out`,
-      animation: isHovered
-        ? 'none'
-        : `none`,
+      animation: isHovered ? 'none' : `none`,
       zIndex: 20,
     };
 
@@ -67,7 +53,6 @@ export const FloatingDot = React.memo(
           fill={fill}
           style={{
             opacity,
-            // transition: 'r 0.3s ease-out, opacity 0.3s ease-out',
           }}
         />
 
@@ -103,4 +88,5 @@ export const FloatingDot = React.memo(
     );
   }
 );
+
 

@@ -12,7 +12,7 @@
   },
   {
     name: 'Atlantic Puffin',
-    species: ' Fratercula arctica',
+    species: ' Fratercula Arctica',
     sound: 'Atlantic Puffin.mp3',
     story:
       'The Atlantic Puffin is a seabird with a colorful beak, often called the "sea parrot." Overfishing and habitat loss have contributed.',
@@ -23,7 +23,7 @@
   },
   {
     name: 'Eurasian Curlew',
-    species: 'Numenius arquata',
+    species: 'Numenius Arquata',
     sound: 'Eurasian Curlew.mp3',
     story:
       'The Eurasian Curlew is one of the largest wading birds, recognized by its long, curved bill. Its population is decreasing due to habitat destruction and agricultural practices.',
@@ -34,24 +34,24 @@
   },
   {
     name: 'Snowy Owl',
-    species: 'Bubo scandiacus',
+    species: 'Bubo Scandiacus',
     sound: 'Snowy Owl.mp3',
     story:
       'The Snowy Owl, a majestic white bird, is an icon of the Arctic. Climate change and habitat degradation threaten its survival',
     status: 'Vulnerable',
-    location: 'Arctic tundra',
+    location: 'Arctic Tundra',
     highlighted: true,
     size: 18,
   },
   {
     name: 'Black-legged Kittiwake',
-    species: 'Rissa tridactyla',
+    species: 'Rissa Tridactyla',
     sound: 'Black-legged Kittiwake.mp3',
     story:
-      'The last member of its genus, its unique voice was lost to silence in 2004.',
+      'The Black-legged Kittiwake is a coastal seabird that nests on cliffs. It faces challenges due to food shortages caused by overfishing and climate change..',
     status: 'Vulnerable',
     location:
-      'The Black-legged Kittiwake is a coastal seabird that nests on cliffs. It faces challenges due to food shortages caused by overfishing and climate change.',
+      'Northern Oceans',
     highlighted: true,
     size: 18,
   },

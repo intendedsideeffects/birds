@@ -19,6 +19,7 @@ body {
   background: black;
   font-family: Arial, Helvetica, sans-serif;
 }
+
 @keyframes float-0 {
   0%, 100% { transform: translateZ(0) translate(0, 0); }
   50% { transform: translateZ(0) translate(10px, -10px); }
@@ -44,16 +45,16 @@ body {
   50% { transform: translateZ(0) translate(8px, 15px); }
 }
 
- @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.8); }
-    to { opacity: 1; transform: scale(1); }
-  }
-  
-  .dot {
-    animation: fadeIn 0.4s ease-out forwards;
-  }
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.dot {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
 .bird-loader-container {
- 
   width: 100%;
   height: 100%;
   display: flex;
@@ -83,9 +84,10 @@ body {
   opacity: 0;
   z-index: 1001;
 }
-.zindexx{
+
+.zindexx {
   z-index: 2000;
-  position: relative
+  position: relative;
 }
 
 .bird-1 { animation-delay: 0s; }
@@ -163,17 +165,13 @@ body {
   background-repeat: no-repeat;
   width: 100%;
   min-height: 500px;
-   
 }
-.dot-labels-wrapper{
-  opacity:0.4;
- 
+
+.dot-labels-wrapper {
+  opacity: 1;
+  color: black;
 }
-/* .dot-labels-wrapper:hover{
-    pointer-events:auto;
-  opacity:1;
-  
-} */
+
 .sliding-panel {
   position: fixed;
   left: -200px; /* Hidden by default */
@@ -184,6 +182,7 @@ body {
   background: none;
   transition: left 0.3s ease;
   z-index: 1000;
+  margin-left: 20px;  /* Added margin to prevent cutoff */
 }
 
 .sliding-panel.open {
@@ -194,14 +193,15 @@ body {
   position: absolute;
   right: -40px;
   top: 50%;
-  transform: translateY(-90%);
+  transform: translateY(-50%);
   width: 40px;
   height: 120px;
-  background: none;
+  background: transparent !important;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-right: 1px solid black;
 }
 
 .panel-tab span {
@@ -211,5 +211,13 @@ body {
   text-transform: uppercase;
   letter-spacing: 2px;
   opacity: 0.4;
+  transition: opacity 0.3s ease;
 }
 
+.panel-tab:hover span {
+  opacity: 1;
+}
+
+.sliding-panel:hover .dot-labels-wrapper {
+  opacity: 1;
+}

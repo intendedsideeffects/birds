@@ -1,12 +1,36 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 
 function LabelsLeftPanel({labelsHidden, setLabelsHidden}) {
+  const [isScatterplotVisible, setIsScatterplotVisible] = useState(false);
+
+  useEffect(() => {
+    const checkScatterplotVisibility = () => {
+      const scatterplot = document.getElementById('plot-container');
+      if (scatterplot) {
+        const rect = scatterplot.getBoundingClientRect();
+        const isVisible = 
+          rect.top < window.innerHeight &&
+          rect.bottom >= 0;
+        setIsScatterplotVisible(isVisible);
+      }
+    };
+
+    // Check visibility on scroll
+    window.addEventListener('scroll', checkScatterplotVisibility);
+    // Check initial visibility
+    checkScatterplotVisibility();
+
+    return () => window.removeEventListener('scroll', checkScatterplotVisibility);
+  }, []);
+
+  if (!isScatterplotVisible) return null;
+
   return (
     <div
       className={labelsHidden ? 'sliding-panel' : 'sliding-panel open'}
       id="panel">
       <div className="panel-tab" onClick={() => setLabelsHidden(!labelsHidden)}>
-        <span>{labelsHidden ? 'LEGEND➡' : '⬅'}</span>
+        <span style={{ color: 'black' }}>{labelsHidden ? 'LEGEND➡' : '⬅'}</span>
       </div>
       <div
         style={{

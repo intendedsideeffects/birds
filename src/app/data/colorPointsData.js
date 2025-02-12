@@ -1,6 +1,6 @@
  const getRegionColor = (status) => {
   const threatColors = {
-    Extinct: '#D3D3D3', // Keeping original grey for Extinct
+    Extinct: '#000000', // Keeping original grey for Extinct
     'Extinct in the Wild': '#800080', // Purple from IUCN chart
     'Critically Endangered (Possibly Extinct)': '#FFA07A', // Light pink from IUCN chart
     'Critically Endangered': '#FFA07A', // Light pink

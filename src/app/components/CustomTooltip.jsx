@@ -1,106 +1,47 @@
-
-
-
-
-const CustomTooltip = ({ active, payload, coordinate }) => {
+const CustomTooltip = ({ active, payload }) => {
   if (!active || !payload?.[0]) return null;
   const bird = payload[0].payload;
-  console.log(bird);
-  const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
-  const scrollY = window.scrollY;
-
-  const tooltipWidth = 200;
-  const tooltipHeight = bird.story ? 200 : 100;
-
-  let left = (coordinate?.x || 0) + 20;
-  let top = (coordinate?.y || 0) + scrollY - tooltipHeight / 2;
-
-  // Viewport bounds checking with scroll consideration
-  if (left + tooltipWidth > viewportWidth) {
-    left = (coordinate?.x || 0) - tooltipWidth - 20;
-  }
-
-  const absoluteTop = top - scrollY;
-  if (absoluteTop + tooltipHeight > viewportHeight) {
-    top = scrollY - viewportHeight * 2.9 - tooltipHeight - 20;
-  }
-  if (absoluteTop < 700) {
-    top = scrollY - viewportHeight * 3.1 + 20;
-  }
-  if (absoluteTop < 0) {
-    top = scrollY + 20;
-  }
-
-  const formatStory = (story) => {
-    if (!story) return '';
-    const words = story.split(' ');
-    const lines = [];
-    let currentLine = '';
-    const maxLineLength = 40;
-
-    words.forEach((word) => {
-      if ((currentLine + ' ' + word).length <= maxLineLength) {
-        currentLine += (currentLine ? ' ' : '') + word;
-      } else {
-        lines.push(currentLine);
-        currentLine = word;
-      }
-    });
-    if (currentLine) {
-      lines.push(currentLine);
-    }
-    return lines.join('\n');
+  
+  const decodeText = (text) => {
+    if (!text) return '';
+    return text
+      .replace(/&#39;/g, "'")
+      .replace(/&quot;/g, '"')
+      .replace(/&rsquo;/g, "'")
+      .replace(/&lsquo;/g, "'")
+      .replace(/&amp;/g, '&');
   };
-
+  
   return (
-    <div
-      style={{
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        color: 'black',
-        padding: '1rem',
-        border: '1px solid #ccc',
-        borderRadius: '4px',
-
-        width: '200px',
-        position: 'absolute',
-        left: `${left + 150}px`,
-        top: `${top}px`,
-        transform: 'none',
-      }}>
-      <p
-        style={{
-          fontWeight: 'bold',
-          fontSize: '1.2em',
-          marginBottom: '0.5rem',
-        }}>
-        {bird.name || 'Unknown Bird'}
+    <div className="bg-white/95 text-black p-4 rounded border border-gray-300 w-64 shadow-lg">
+      <p className="font-bold text-lg mb-2">
+        {decodeText(bird.name) || 'Unknown Bird'}
       </p>
-      <p style={{ fontStyle: 'italic', marginBottom: '0.5rem' }}>
-        {bird.species || 'Unknown Species'}
+      <p className="italic mb-2">
+        {decodeText(bird.species) || 'Unknown Species'}
       </p>
-      <p style={{ marginBottom: '0.25rem' }}>
-        <strong>Location:</strong> {bird.location || 'Unknown'}
+      <p className="mb-1">
+        <strong>Location:</strong> {decodeText(bird.location) || 'Unknown'}
       </p>
-      <p style={{ marginBottom: '0.25rem' }}>
-        <strong>Year:</strong> {bird.ext_date || 'Unknown Year'}
-      </p>
-      <p style={{ marginBottom: '0.25rem' }}>
-        <strong>Status:</strong> {bird.status || 'Unknown Year'}
+      {bird.ext_date && (
+        <p className="mb-1">
+          <strong>Year:</strong> {bird.ext_date}
+        </p>
+      )}
+      <p className="mb-1">
+        <strong>Status:</strong> {decodeText(bird.status) || 'Unknown Status'}
       </p>
       {bird.story && (
-        <p
-          style={{
-            marginTop: '0.5rem',
-            borderTop: '1px solid #eee',
-            paddingTop: '0.5rem',
-            whiteSpace: 'pre-line',
-            lineHeight: '1.4',
-          }}>
-          {formatStory(bird.story)}
+        <p className="mt-2 pt-2 border-t border-gray-200 whitespace-pre-line leading-relaxed">
+          {decodeText(bird.story)}
         </p>
       )}
     </div>
   );
 };
-export default CustomTooltip
+
+export default CustomTooltip;
+
+
+
+
