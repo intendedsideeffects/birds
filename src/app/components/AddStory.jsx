@@ -1,21 +1,33 @@
 import React, { useState } from 'react'
 
-function AddStory({ setShowAddStory, showAddStory, setSelectedStory, handleSendStory, birdStories, selectedStory, setSelectedSpecies, errorSendStory, isSendStorySuccess, setIsSendStorySuccess, setErrorSendStory }) {
- 
+function AddStory({ 
+  setShowAddStory, 
+  showAddStory, 
+  setSelectedStory, 
+  handleSendStory, 
+  birdStories, 
+  selectedStory, 
+  setSelectedSpecies, 
+  errorSendStory, 
+  isSendStorySuccess, 
+  setIsSendStorySuccess, 
+  setErrorSendStory 
+}) {
   return (
-    <section className=" zindexx min-h-screen bg-black text-white flex flex-col items-center justify-center px-4">
-      <div className="text-black zindexx max-w-4xl mx-auto text-center flex flex-col items-center justify-center mb-60">
+    <section className="zindexx min-h-screen bg-white text-black flex flex-col items-center justify-center px-4">
+      <div className="zindexx max-w-4xl mx-auto text-center flex flex-col items-center justify-center mb-60">
         <label
           onClick={() => setShowAddStory(!showAddStory)}
           htmlFor="stories"
-          className="cursor-pointer text-white text-3xl font-light ">
+          className="cursor-pointer text-black text-3xl font-light"
+        >
           ADD STORY+
         </label>
 
         {showAddStory && (
           <>
             <select
-              className="w-[70%] bg-white  text-center rounded"
+              className="w-[70%] bg-white text-black text-center rounded border border-black"
               id="stories"
               name="stories"
               onChange={(e) => {
@@ -28,12 +40,11 @@ function AddStory({ setShowAddStory, showAddStory, setSelectedStory, handleSendS
                 setSelectedSpecies(e.target.value);
                 setIsSendStorySuccess(false);
                 setErrorSendStory('');
-              }}>
+              }}
+            >
               {birdStories
-                //gets rid of duplicates
                 ?.filter(
                   (story, index, birdStoriesArray) =>
-                    //finds the first occurence of each bird and filters tho other ones
                     index === birdStoriesArray.findIndex((s) => s.species === story.species)
                 )
                 .map((stories) => (
@@ -46,7 +57,7 @@ function AddStory({ setShowAddStory, showAddStory, setSelectedStory, handleSendS
             <br />
             <textarea
               rows={10}
-              className="m-8"
+              className="m-8 border border-black p-2"
               type="text"
               placeholder="Add a story"
               value={selectedStory}
@@ -54,14 +65,15 @@ function AddStory({ setShowAddStory, showAddStory, setSelectedStory, handleSendS
             />
             <button
               onClick={handleSendStory}
-              className="rounded-full text-black bg-gray-500 font-bold pl-9 pr-9 pt-1 pb-1">
+              className="rounded-full text-white bg-black font-bold px-9 py-1"
+            >
               Send
             </button>
             {isSendStorySuccess ? (
-              <p className="text-white">Story Updated ✅</p>
+              <p className="text-black">Story Updated <span className="bg-black text-white px-1">✓</span></p>
             ) : null}
             {errorSendStory ? (
-              <p className="text-white">{errorSendStory.message} ❌</p>
+              <p className="text-black">{errorSendStory.message} <span className="text-black">✗</span></p>
             ) : null}
           </>
         )}

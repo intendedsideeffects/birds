@@ -94,15 +94,20 @@ function PlotsScatterChart({ timelineData, visibleData }) {
                 height: '100%',
                 position: 'relative',
                 backgroundColor: 'white',
-                color: 'black'
+                color: 'black',
+                overflow: 'visible'
             }}>
             
             <ScatterChart
                 key="main-scatter-chart"
-                style={{ width: '100%' }}
+                style={{ 
+                    width: '100%',
+                    height: '100%',
+                    overflow: 'visible'
+                }}
                 width={STATUS_WIDTH}
-                height={STATUS_HEIGHT - 900}
-                margin={{ top: 100, right: 190, bottom: 50, left: 30 }}>
+                height={STATUS_HEIGHT - 1800}
+                margin={{ top: 20, right: 190, bottom: 20, left: 30 }}>
                 <XAxis
                     type="number"
                     dataKey="x"
