@@ -34,6 +34,13 @@ export const FloatingDot = React.memo(
       zIndex: 20,
     };
 
+    // Debug: log fill and status for the first few dots
+    useEffect(() => {
+      if (cx < 10 && cy < 10) { // Only log a few times
+        console.log('FloatingDot fill:', fill, 'status:', payload.status);
+      }
+    }, [fill, payload.status, cx, cy]);
+
     return (
       <g
         style={groupStyle}

@@ -6,8 +6,9 @@ import historicalEvents from "../app/data/historicalPoints"
 import birdArr from './data/birdArray';
 import LabelsLeftPanel from './components/LabelsLeftPanel';
 import PlotsScatterChart from './components/PlotsScatterChart';
-import processHisoricalData from './utils/processHistoricalData';
+import { processHistoricalData } from './utils/processHistoricalData';
 import processFutureData from './utils/processFutureData';
+import { supabase } from './utils/supabaseClient';
 
 const ExtinctSpeciesViz = ({ setBirdStories }) => {
   const [data, setData] = useState([]);
@@ -41,11 +42,25 @@ const ExtinctSpeciesViz = ({ setBirdStories }) => {
   //variables; birdStories(for the addStory functionality), timelineData, Data(the dots, composed of hitoricalData, futureData and birdsArr),
   const loadData = async () => {
     try {
+      // Fetch historical data
       const historicalResponse = await fetch('/api/birds');
       const historicalData = await historicalResponse.json();
+      const processedHistorical = processHistoricalData(historicalData);
 
-      const futureData = processFutureData(historicalData);
-      const processedData = processHisoricalData(historicalData);
+      // Fetch future data from Supabase
+      const { data: futureRaw, error } = await supabase.from('future_stories').select('*');
+      let processedFuture = [];
+      if (!error && futureRaw) {
+        processedFuture = processFutureData(futureRaw);
+      } else if (error) {
+        console.error('Error fetching future data:', error);
+      }
+
+      setData([
+        ...removeRandomDots([...processedHistorical, ...processedFuture]),
+        ...birdArr,
+      ]);
+      setBirdStories(historicalData);
 
       const timelineMarks = [];
       for (let year = 1500; year <= 2200; year += 100) {
@@ -56,13 +71,7 @@ const ExtinctSpeciesViz = ({ setBirdStories }) => {
           event: historicalEvents.find((e) => e.year === year)?.text || '',
         });
       }
-      setBirdStories(historicalData);
       setTimelineData(timelineMarks);
-      // setData([...processedData, ...birdArr, ...futureData]);
-      setData([
-        ...removeRandomDots([...processedData, ...futureData]),
-        ...birdArr,
-      ]);
     } catch (error) {
       console.error('Error loading data:', error);
     }
@@ -179,9 +188,9 @@ const ExtinctSpeciesViz = ({ setBirdStories }) => {
     <div
       style={{
         width: '100wv',
-        height: `${STATUS_HEIGHT - 1800}px`,
-        backgroundColor: 'black',
-        color: 'white',
+        height: `${STATUS_HEIGHT - 1500}px`,
+        backgroundColor: 'white',
+        color: 'black',
       }}>
       <LabelsLeftPanel labelsHidden={labelsHidden} setLabelsHidden={setLabelsHidden} />
       <PlotsScatterChart timelineData={timelineData} visibleData={visibleData} />

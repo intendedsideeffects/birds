@@ -20,7 +20,7 @@ export function VideoPlayer() {
   }
 
   return (
-    <div className="relative w-full h-screen">
+    <div className="relative w-full h-[99.9vh]" style={{ top: 0, overflow: 'visible' }}>
       <video
         ref={videoRef}
         className="w-full h-full object-cover"

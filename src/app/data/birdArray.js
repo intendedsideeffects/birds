@@ -1,4 +1,3 @@
-
 import birdVariants from "./birds-sounds";
 const STATUS_HEIGHT = 12500;
 const STATUS_WIDTH = 1600;
@@ -26,6 +25,7 @@ function createBirdVariant(index) {
     sound: variant.sound,
     size: 18,
     status: variant.status,
+    tooltipStatus: variant.tooltipStatus,
     highlighted: true,
   };
 }

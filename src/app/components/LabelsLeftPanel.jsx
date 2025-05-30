@@ -25,8 +25,8 @@ function LabelsLeftPanel({labelsHidden, setLabelsHidden}) {
             <span
               className="dot-labels-wrapper"
               style={{
-                width: '8px',
-                height: '8px',
+                width: '12px',
+                height: '12px',
                 borderRadius: '50%',
                 backgroundColor: '#999999',
                 marginRight: '8px',
@@ -44,8 +44,8 @@ function LabelsLeftPanel({labelsHidden, setLabelsHidden}) {
             <span
               className="dot-labels-wrapper"
               style={{
-                width: '16px',
-                height: '16px',
+                width: '24px',
+                height: '24px',
                 borderRadius: '50%',
                 backgroundColor: '#999999',
                 marginRight: '8px',
@@ -63,8 +63,8 @@ function LabelsLeftPanel({labelsHidden, setLabelsHidden}) {
             <span
               className="dot-labels-wrapper"
               style={{
-                width: '32px',
-                height: '32px',
+                width: '50px',
+                height: '50px',
                 borderRadius: '50%',
                 backgroundColor: '#999999',
                 marginRight: '8px',
@@ -88,7 +88,7 @@ function LabelsLeftPanel({labelsHidden, setLabelsHidden}) {
                 width: '16px',
                 height: '16px',
                 borderRadius: '50%',
-                backgroundColor: '#000000',
+                backgroundColor: 'rgba(0,0,0,0.85)',
                 marginRight: '8px',
               }}></span>
             <span className="dot-labels-wrapper" style={{ fontSize: '12px' }}>
@@ -107,7 +107,7 @@ function LabelsLeftPanel({labelsHidden, setLabelsHidden}) {
                 width: '16px',
                 height: '16px',
                 borderRadius: '50%',
-                backgroundColor: '#333333',
+                backgroundColor: 'rgba(51,51,51,0.9)',
                 marginRight: '8px',
               }}></span>
             <span className="dot-labels-wrapper" style={{ fontSize: '12px' }}>
@@ -126,7 +126,7 @@ function LabelsLeftPanel({labelsHidden, setLabelsHidden}) {
                 width: '16px',
                 height: '16px',
                 borderRadius: '50%',
-                backgroundColor: '#666666',
+                backgroundColor: 'rgba(102,102,102,0.8)',
                 marginRight: '8px',
               }}></span>
             <span className="dot-labels-wrapper" style={{ fontSize: '12px' }}>
@@ -145,7 +145,7 @@ function LabelsLeftPanel({labelsHidden, setLabelsHidden}) {
                 width: '16px',
                 height: '16px',
                 borderRadius: '50%',
-                backgroundColor: '#999999',
+                backgroundColor: 'rgba(153,153,153,0.7)',
                 marginRight: '8px',
               }}></span>
             <span className="dot-labels-wrapper" style={{ fontSize: '12px' }}>
@@ -164,7 +164,7 @@ function LabelsLeftPanel({labelsHidden, setLabelsHidden}) {
                 width: '16px',
                 height: '16px',
                 borderRadius: '50%',
-                backgroundColor: '#CCCCCC',
+                backgroundColor: 'rgba(204,204,204,0.6)',
                 marginRight: '8px',
               }}></span>
             <span className="dot-labels-wrapper" style={{ fontSize: '12px' }}>
@@ -183,8 +183,7 @@ function LabelsLeftPanel({labelsHidden, setLabelsHidden}) {
                 width: '16px',
                 height: '16px',
                 borderRadius: '50%',
-                backgroundColor: '#FFFFFF',
-                border: '1px solid #CCCCCC',
+                backgroundColor: 'rgba(245,245,245,1)',
                 marginRight: '8px',
               }}></span>
             <span className="dot-labels-wrapper" style={{ fontSize: '12px' }}>

@@ -1,33 +1,33 @@
 import React, { useState } from 'react'
 
-function AddStory({ 
-  setShowAddStory, 
-  showAddStory, 
-  setSelectedStory, 
-  handleSendStory, 
-  birdStories, 
-  selectedStory, 
-  setSelectedSpecies, 
-  errorSendStory, 
-  isSendStorySuccess, 
-  setIsSendStorySuccess, 
-  setErrorSendStory 
+function AddStory({
+  setSelectedStory,
+  handleSendStory,
+  birdStories,
+  selectedStory,
+  setSelectedSpecies,
+  errorSendStory,
+  isSendStorySuccess,
+  setIsSendStorySuccess,
+  setErrorSendStory
 }) {
+  const [showForm, setShowForm] = useState(true);
+
   return (
     <section className="zindexx min-h-screen bg-white text-black flex flex-col items-center justify-center px-4">
       <div className="zindexx max-w-4xl mx-auto text-center flex flex-col items-center justify-center mb-60">
         <label
-          onClick={() => setShowAddStory(!showAddStory)}
+          onClick={() => setShowForm(!showForm)}
           htmlFor="stories"
           className="cursor-pointer text-black text-3xl font-light"
         >
           ADD STORY+
         </label>
 
-        {showAddStory && (
+        {showForm && (
           <>
             <select
-              className="w-[70%] bg-white text-black text-center rounded border border-black"
+              className="w-[70%] bg-white text-black text-center rounded border border-black mx-auto"
               id="stories"
               name="stories"
               onChange={(e) => {
@@ -47,9 +47,11 @@ function AddStory({
                   (story, index, birdStoriesArray) =>
                     index === birdStoriesArray.findIndex((s) => s.species === story.species)
                 )
+                .filter(bird => bird.common_name !== '-')
+                .sort((a, b) => a.common_name.localeCompare(b.common_name))
                 .map((stories) => (
-                  <option key={stories.stories} value={stories.species}>
-                    {stories.species}
+                  <option key={stories.species} value={stories.species}>
+                    {stories.common_name || stories.species}
                   </option>
                 ))}
             </select>

@@ -29,7 +29,7 @@ const CustomTooltip = ({ active, payload }) => {
         </p>
       )}
       <p className="mb-1">
-        <strong>Status:</strong> {decodeText(bird.status) || 'Unknown Status'}
+        <strong>Status:</strong> {decodeText(bird.tooltipStatus || (bird.status === 'EX' ? 'Extinct' : bird.status)) || 'Unknown Status'}
       </p>
       {bird.story && (
         <p className="mt-2 pt-2 border-t border-gray-200 whitespace-pre-line leading-relaxed">

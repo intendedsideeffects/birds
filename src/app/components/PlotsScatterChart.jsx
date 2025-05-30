@@ -86,6 +86,14 @@ function PlotsScatterChart({ timelineData, visibleData }) {
         }));
     }, [visibleData, getStableColor]);
 
+    // Debug: log status values for visible dots
+    useEffect(() => {
+        if (stabilizedVisibleData.length > 0) {
+            console.log('Dot statuses:', stabilizedVisibleData.map(d => d.status));
+            console.log('First 5 dots:', stabilizedVisibleData.slice(0, 5));
+        }
+    }, [stabilizedVisibleData]);
+
     return (
         <div
             id="plot-container"
@@ -106,8 +114,8 @@ function PlotsScatterChart({ timelineData, visibleData }) {
                     overflow: 'visible'
                 }}
                 width={STATUS_WIDTH}
-                height={STATUS_HEIGHT - 1800}
-                margin={{ top: 20, right: 190, bottom: 20, left: 30 }}>
+                height={STATUS_HEIGHT - 1500}
+                margin={{ top: 20, right: 190, bottom: 80, left: 30 }}>
                 <XAxis
                     type="number"
                     dataKey="x"
@@ -158,15 +166,16 @@ function PlotsScatterChart({ timelineData, visibleData }) {
                         }
 
                         return (
-                            <g>
+                            <g style={{ pointerEvents: 'none' }}>
                                 {lines.map((line, i) => (
                                     <text
                                         key={i}
                                         x={props.cx + 100}
-                                        y={props.cy + (i - (lines.length - 1) / 2) * 20}
+                                        y={props.cy + i * 18}
                                         textAnchor="start"
                                         fill="black"
-                                        fontSize="14">
+                                        fontSize="16"
+                                        style={{ pointerEvents: 'none' }}>
                                         {line}
                                     </text>
                                 ))}

@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -14,9 +20,17 @@
   }
 }
 
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
 body {
   color: var(--foreground);
-  background: black;
+  background: white;
   font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -88,26 +102,6 @@ body {
 .zindexx {
   z-index: 2000;
   position: relative;
-}
-
-.bird-1 { animation-delay: 0s; }
-.bird-2 { animation-delay: 0.375s; }
-.bird-3 { animation-delay: 0.75s; }
-.bird-4 { animation-delay: 1.125s; }
-.bird-5 { animation-delay: 1.5s; }
-.bird-6 { animation-delay: 1.875s; }
-.bird-7 { animation-delay: 2.25s; }
-.bird-8 { animation-delay: 2.625s; }
-
-@keyframes fly {
-  0% {
-    transform: translate(0, 0) scale(1) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(var(--tx), var(--ty)) scale(0.2) rotate(var(--rotate));
-    opacity: 0;
-  }
 }
 
 .bird-1 {
