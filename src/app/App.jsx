@@ -133,7 +133,7 @@ const ExtinctSpeciesViz = ({ setBirdStories }) => {
 
   const visibleData = useMemo(() => {
     if (!windowHeight) return [];
-    const stableViewportStart = STATUS_HEIGHT - (scrollPosition + windowHeight) -2000;
+    const stableViewportStart = STATUS_HEIGHT - (scrollPosition + windowHeight) -12000;
     const stableViewportEnd = STATUS_HEIGHT - scrollPosition +3300
     const preRenderEnd = stableViewportStart // Pre-render buffer
     return data.filter((dot) => {
