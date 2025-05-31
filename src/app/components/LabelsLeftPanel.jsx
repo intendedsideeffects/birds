@@ -1,7 +1,23 @@
 import React from 'react'
+import AddStory from './AddStory';
 
-function LabelsLeftPanel({isOpen, toggleOpen}) {
+function LabelsLeftPanel({
+  isOpen,
+  toggleOpen,
+  setSelectedStory,
+  handleSendStory,
+  birdStories,
+  selectedStory,
+  setSelectedSpecies,
+  errorSendStory,
+  isSendStorySuccess,
+  setIsSendStorySuccess,
+  setErrorSendStory
+}) {
   console.log('LabelsLeftPanel rendered. isOpen:', isOpen);
+
+  const [showAddStoryForm, setShowAddStoryForm] = React.useState(false);
+
   return (
     <div
       className={isOpen ? 'sliding-panel open' : 'sliding-panel'}
@@ -116,6 +132,36 @@ function LabelsLeftPanel({isOpen, toggleOpen}) {
             </span>
           </div>
         </div>
+      </div>
+      <div style={{ padding: '0 16px 16px 16px' }}>
+        <button
+          style={{
+            padding: '10px 15px',
+            backgroundColor: '#007bff',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            fontSize: '14px',
+          }}
+          onClick={() => setShowAddStoryForm(!showAddStoryForm)}
+        >
+          {showAddStoryForm ? 'Hide Add Story' : 'Add New Story'}
+        </button>
+
+        {showAddStoryForm && (
+          <AddStory
+            setSelectedStory={setSelectedStory}
+            handleSendStory={handleSendStory}
+            birdStories={birdStories}
+            selectedStory={selectedStory}
+            setSelectedSpecies={setSelectedSpecies}
+            errorSendStory={errorSendStory}
+            isSendStorySuccess={isSendStorySuccess}
+            setIsSendStorySuccess={setIsSendStorySuccess}
+            setErrorSendStory={setErrorSendStory}
+          />
+        )}
       </div>
     </div>
   );

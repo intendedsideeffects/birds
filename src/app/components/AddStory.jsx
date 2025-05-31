@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 function AddStory({
   setSelectedStory,
@@ -9,22 +9,13 @@ function AddStory({
   errorSendStory,
   isSendStorySuccess,
   setIsSendStorySuccess,
-  setErrorSendStory
+  setErrorSendStory,
+  isVisible
 }) {
-  const [showForm, setShowForm] = useState(true);
-
   return (
-    <section className="zindexx min-h-screen bg-white text-black flex flex-col px-4">
-      <div className="zindexx mx-auto text-center flex flex-col items-center justify-center mb-60">
-        <label
-          onClick={() => setShowForm(!showForm)}
-          htmlFor="stories"
-          className="cursor-pointer text-black text-3xl font-light"
-        >
-          ADD STORY+
-        </label>
-
-        {showForm && (
+    <section className="zindexx bg-white text-black px-4">
+      <div className="zindexx">
+        {isVisible && (
           <>
             <select
               className="w-[70%] bg-white text-black text-center rounded border border-black mx-auto"
@@ -47,8 +38,12 @@ function AddStory({
                   (story, index, birdStoriesArray) =>
                     index === birdStoriesArray.findIndex((s) => s.species === story.species)
                 )
-                .filter(bird => bird.common_name !== '-')
-                .sort((a, b) => a.common_name.localeCompare(b.common_name))
+                .filter(bird => bird.common_name !== null && bird.common_name !== undefined && bird.common_name !== '-')
+                .sort((a, b) => {
+                  const nameA = a.common_name || '';
+                  const nameB = b.common_name || '';
+                  return nameA.localeCompare(nameB);
+                })
                 .map((stories) => (
                   <option key={stories.species} value={stories.species}>
                     {stories.common_name || stories.species}

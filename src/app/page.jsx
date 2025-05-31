@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { VideoPlayer } from './components/video-player';
-import AddStory from './components/AddStory';
 // import NewsFooter from './components/NewsFooter';
 // import ChronologyLoss from './components/ChronologyLossSection';
 import MiroSection from './components/MiroSection';
@@ -16,11 +15,7 @@ const DynamicChart2 = dynamic(() => import('./App'), {
 
 export default function Home() {
   const [birdStories, setBirdStories] = useState([]);
-  const [selectedStory, setSelectedStory] = useState("");
-  const [selectedSpecies, setSelectedSpecies] = useState("");
   const [news, setNews] = useState([]);
-  const [isSendStorySuccess, setIsSendStorySuccess] = useState(false);
-  const [errorSendStory, setErrorSendStory] = useState("");
 
   useEffect(() => {
     const fetchBirds = async () => {
@@ -53,23 +48,6 @@ export default function Home() {
     fetchNews();
   }, []);
 
-  const handleSendStory = async () => {
-    try {
-      const response = await fetch('/api/birds', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({species:selectedSpecies, story:selectedStory }),
-      });
-      const result =await response.json();
-      setIsSendStorySuccess(result.status === 200 ? true: false);
-    } catch (error) {
-      setErrorSendStory(error);
-      console.error('Error sending story:', error);
-    }
-  };
-
   return (
     <main className="min-h-screen">
       {/* Video Player positioned at the top */}
@@ -87,29 +65,10 @@ export default function Home() {
         {/* Removed NewsFooter */}
         {/* <MiroSection /> */}
 
-        {/* Add Story section - always rendered, internal state manages form visibility */}
-        <AddStory
-          setSelectedStory={setSelectedStory}
-          handleSendStory={handleSendStory}
-          birdStories={birdStories}
-          selectedStory={selectedStory}
-          setSelectedSpecies={setSelectedSpecies}
-          errorSendStory={errorSendStory}
-          isSendStorySuccess={isSendStorySuccess}
-          setIsSendStorySuccess={setIsSendStorySuccess}
-          setErrorSendStory={setErrorSendStory}
-        />
+        {/* Removed Add Story section */}
 
-        {isSendStorySuccess && (
-          <div className="fixed bottom-4 left-4 bg-green-500 text-white px-4 py-2 rounded z-50">
-            Story sent successfully!
-          </div>
-        )}
-        {errorSendStory && (
-          <div className="fixed bottom-4 left-4 bg-red-500 text-white px-4 py-2 rounded z-50">
-            Error sending story: {errorSendStory}
-          </div>
-        )}
+        {/* Removed success message */}
+        {/* Removed error message */}
       </div>
     </main>
   );
