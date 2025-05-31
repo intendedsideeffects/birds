@@ -196,8 +196,6 @@ const ExtinctSpeciesViz = ({ setBirdStories }) => {
         width: '100%',
         backgroundColor: 'white',
         color: 'black',
-        minHeight: '100vh',
-        overflowY: 'auto',
         position: 'relative',
       }}>
       <LabelsLeftPanel isOpen={isLegendOpen} toggleOpen={toggleOpen} />

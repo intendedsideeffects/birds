@@ -13,7 +13,7 @@ const CustomTooltip = ({ active, payload }) => {
   };
   
   return (
-    <div className="bg-white/95 text-black p-4 rounded border border-gray-300 w-64 shadow-lg">
+    <div className="bg-white/95 text-black p-4 rounded border border-gray-300 w-64 shadow-lg font-arial-sans text-lg">
       <p className="font-bold text-lg mb-2">
         {decodeText(bird.name) || 'Unknown Bird'}
       </p>

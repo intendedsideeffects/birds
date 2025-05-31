@@ -132,7 +132,7 @@ function PlotsScatterChart({ timelineData, visibleData }) {
                             );
                             return year;
                         }}
-                        tick={{ fontSize: 18, fill: 'black', textAnchor: 'start' }}
+                        tick={{ fontSize: 18, fill: 'black', textAnchor: 'start', fontFamily: 'Arial, Helvetica, sans-serif' }}
                         width={80}
                     />
                     <Tooltip 

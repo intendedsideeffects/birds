@@ -212,3 +212,15 @@ body {
 .sliding-panel:hover .dot-labels-wrapper {
   opacity: 1;
 }
+
+.font-arial-sans {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.recharts-cartesian-axis text {
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+.recharts-yAxis .recharts-cartesian-axis-tick text {
+  font-family: Arial, Helvetica, sans-serif !important;
+}
