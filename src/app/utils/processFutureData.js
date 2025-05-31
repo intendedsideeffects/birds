@@ -56,6 +56,17 @@ const processFutureData = (data) => {
       STATUS_WIDTH / 2 +
       (Math.random() - 0.5) * 100;
 
+    let size = 6; // Default small size (increased from 4)
+    const hasStory = bird.story && bird.story.trim().length > 0;
+    const hasSound = bird.sound && bird.sound.trim().length > 0;
+
+    if (hasStory && hasSound) {
+      size = 18; // Large size (remains 18)
+    } else if (hasStory) {
+      size = 10; // Medium size (increased from 8)
+    }
+    // Small size (6) is already set as default
+
     return {
       x,
       y,
@@ -65,17 +76,13 @@ const processFutureData = (data) => {
       status: bird.iucn_category_2021,
       tooltipStatus: bird.description,
       story: bird.story?.trim() || null,
-      size:
-        bird.story && bird.story.trim().length > 0
-          ? bird.highlighted
-            ? 18
-            : 8
-          : 4,
+      size,
       isFuture: true,
       year: Math.round(year), // Store the calculated year
       common_name: bird.common_name,
       iucn_category_2021: bird.iucn_category_2021,
       description: bird.description,
+      // fill and showOutline are now determined in FloatingDot based on size
     };
   });
 };

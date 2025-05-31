@@ -27,6 +27,18 @@ const processHistoricalData = (data) =>
         STATUS_WIDTH / 2 +
         (Math.random() - 0.5) * 100;
 
+      let size = 6; // Default small size (aligned with future data)
+
+      const hasStory = bird.story && bird.story.trim().length > 0;
+      const hasSound = bird.sound && bird.sound.trim().length > 0;
+
+      if (hasStory && hasSound) {
+        size = 18; // Large size (aligned with future data)
+      } else if (hasStory) {
+        size = 10; // Middle size (aligned with future data)
+      }
+      // Small size (6) is already set as default
+
       return {
         x,
         y,
@@ -35,13 +47,14 @@ const processHistoricalData = (data) =>
         location: bird.archip?.replace(/\*$/, '').trim() || '-',
         year,
         story: bird.story,
-        size: bird.story && bird.story.trim().length > 0 ? 8 : 4,
-        status: 'EX',
+        size: size, // Use calculated size
+        status: 'EX', // Historical data are extinct
         tooltipStatus: bird.description,
         ext_date: bird.ext_date,
         common_name: bird.common_name,
         iucn_category_2021: bird.iucn_category_2021,
         description: bird.description,
+        // fill and showOutline are now determined in FloatingDot based on size
       };
     });
 

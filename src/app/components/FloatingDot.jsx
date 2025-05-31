@@ -28,18 +28,21 @@ export const FloatingDot = React.memo(
     const opacity = 1.0; // Set opacity to full
     const blur = Math.max(0, (1 - scale) * 2);
 
+    // Determine dot color based on size (all black)
+    const dotFill = 'black';
+
     const groupStyle = {
       cursor: 'pointer',
       animation: isHovered ? 'none' : `none`,
       zIndex: 20,
     };
 
-    // Debug: log fill and status for the first few dots
+    // Debug: log size and fill for the first few dots
     useEffect(() => {
       if (cx < 10 && cy < 10) { // Only log a few times
-        console.log('FloatingDot fill:', fill, 'status:', payload.status);
+        console.log('FloatingDot size:', r, 'fill:', dotFill);
       }
-    }, [fill, payload.status, cx, cy]);
+    }, [r, cx, cy, dotFill]);
 
     return (
       <g
@@ -52,14 +55,15 @@ export const FloatingDot = React.memo(
           setIsHovered(false);
           onMouseLeave();
         }}>
+        {/* Outline removed */}
         {/* Main dot */}
         <circle
           cx={cx}
           cy={cy}
           r={isHovered ? baseSize * 3 : baseSize}
-          fill={fill}
+          fill={dotFill}
           style={{
-            opacity,
+            opacity: r <= 6 ? 0.1 : (r === 10 ? 0.4 : 0.9), // Set opacity based on NEW size: small (<=6) 10%, medium (10) 40%, large (18) 90%
           }}
         />
 
@@ -71,19 +75,6 @@ export const FloatingDot = React.memo(
           fill="transparent"
           style={{ pointerEvents: 'all' }}
         />
-
-        {/* Hover ring indicator */}
-        {isHovered && (
-          <circle
-            cx={cx}
-            cy={cy}
-            r={hitboxSize}
-            fill="none"
-            stroke="white"
-            strokeWidth="1"
-            strokeOpacity="0.1"
-          />
-        )}
       </g>
     );
   },
@@ -91,7 +82,8 @@ export const FloatingDot = React.memo(
     return (
       prevProps.cx === nextProps.cx &&
       prevProps.cy === nextProps.cy &&
-      prevProps.r === nextProps.r
+      prevProps.r === nextProps.r &&
+      prevProps.fill === nextProps.fill // Compare fill as well
     );
   }
 );
