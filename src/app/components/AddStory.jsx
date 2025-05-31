@@ -14,8 +14,8 @@ function AddStory({
   const [showForm, setShowForm] = useState(true);
 
   return (
-    <section className="zindexx min-h-screen bg-white text-black flex flex-col items-center justify-center px-4">
-      <div className="zindexx max-w-4xl mx-auto text-center flex flex-col items-center justify-center mb-60">
+    <section className="zindexx min-h-screen bg-white text-black flex flex-col px-4">
+      <div className="zindexx mx-auto text-center flex flex-col items-center justify-center mb-60">
         <label
           onClick={() => setShowForm(!showForm)}
           htmlFor="stories"

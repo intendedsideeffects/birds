@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useMemo, useCallback } from 'react';
-import { ScatterChart, Scatter, XAxis, YAxis, Tooltip } from 'recharts';
+import { ScatterChart, Scatter, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import getRegionColor from '../data/colorPointsData';
 import CustomTooltip from './CustomTooltip';
 import { FloatingDot } from './FloatingDot';
@@ -99,106 +99,104 @@ function PlotsScatterChart({ timelineData, visibleData }) {
             id="plot-container"
             style={{
                 width: '100%',
-                height: '100%',
+                height: STATUS_HEIGHT + 'px',
                 position: 'relative',
                 backgroundColor: 'white',
                 color: 'black',
                 overflow: 'visible'
             }}>
             
-            <ScatterChart
-                key="main-scatter-chart"
-                style={{ 
-                    width: '100%',
-                    height: '100%',
-                    overflow: 'visible'
-                }}
-                width={STATUS_WIDTH}
-                height={STATUS_HEIGHT - 1500}
-                margin={{ top: 20, right: 190, bottom: 80, left: 30 }}>
-                <XAxis
-                    type="number"
-                    dataKey="x"
-                    domain={[-STATUS_WIDTH / 2, STATUS_WIDTH / 2]}
-                    tickFormatter={(value) => Math.round(value)}
-                    hide
-                />
-                <YAxis
-                    type="number"
-                    dataKey="y"
-                    domain={[0, STATUS_HEIGHT]}
-                    orientation="right"
-                    ticks={timelineData.map((mark) => mark.y)}
-                    tickFormatter={(value) => {
-                        const year = Math.round(
-                            2200 - (value / STATUS_HEIGHT) * (2200 - 1500)
-                        );
-                        return year;
+            <ResponsiveContainer width="100%" height="100%">
+                <ScatterChart
+                    key="main-scatter-chart"
+                    style={{ 
+                        overflow: 'visible'
                     }}
-                    tick={{ fontSize: 18, fill: 'black', textAnchor: 'start' }}
-                    width={80}
-                />
-                <Tooltip 
-                    content={<CustomTooltip />}
-                    cursor={{ stroke: '#666' }}
-                    isAnimationActive={false}
-                />
+                    margin={{ top: 20, right: 310, bottom: 80, left: 30 }}>
+                    <XAxis
+                        type="number"
+                        dataKey="x"
+                        domain={[-STATUS_WIDTH / 2, STATUS_WIDTH / 2]}
+                        tickFormatter={(value) => Math.round(value)}
+                        hide
+                    />
+                    <YAxis
+                        type="number"
+                        dataKey="y"
+                        domain={[0, STATUS_HEIGHT]}
+                        orientation="right"
+                        ticks={timelineData.map((mark) => mark.y)}
+                        tickFormatter={(value) => {
+                            const year = Math.round(
+                                2200 - (value / STATUS_HEIGHT) * (2200 - 1500)
+                            );
+                            return year;
+                        }}
+                        tick={{ fontSize: 18, fill: 'black', textAnchor: 'start' }}
+                        width={80}
+                    />
+                    <Tooltip 
+                        content={<CustomTooltip />}
+                        cursor={{ stroke: '#666' }}
+                        isAnimationActive={false}
+                    />
 
-                <Scatter
-                    data={stabilizedData}
-                    shape={(props) => {
-                        const text = String(props.payload.event);
-                        const words = text.split(' ');
-                        let lines = [];
-                        let currentLine = '';
-                        const maxWidth = 30;
+                    <Scatter
+                        data={stabilizedData}
+                        shape={(props) => {
+                            const text = String(props.payload.event);
+                            const words = text.split(' ');
+                            let lines = [];
+                            let currentLine = '';
+                            const maxWidth = 30;
 
-                        words.forEach((word) => {
-                            if ((currentLine + ' ' + word).length <= maxWidth) {
-                                currentLine += (currentLine ? ' ' : '') + word;
-                            } else {
+                            words.forEach((word) => {
+                                if ((currentLine + ' ' + word).length <= maxWidth) {
+                                    currentLine += (currentLine ? ' ' : '') + word;
+                                } else {
+                                    lines.push(currentLine);
+                                    currentLine = word;
+                                }
+                            });
+                            if (currentLine) {
                                 lines.push(currentLine);
-                                currentLine = word;
                             }
-                        });
-                        if (currentLine) {
-                            lines.push(currentLine);
-                        }
 
-                        return (
-                            <g style={{ pointerEvents: 'none' }}>
-                                {lines.map((line, i) => (
-                                    <text
-                                        key={i}
-                                        x={props.cx + 100}
-                                        y={props.cy + i * 18}
-                                        textAnchor="start"
-                                        fill="black"
-                                        fontSize="16"
-                                        style={{ pointerEvents: 'none' }}>
-                                        {line}
-                                    </text>
-                                ))}
-                            </g>
-                        );
-                    }}
-                />
+                            return (
+                                <g style={{ pointerEvents: 'none' }}>
+                                    {lines.map((line, i) => (
+                                        <text
+                                            key={i}
+                                            x={props.cx + 100}
+                                            y={props.cy + i * 18}
+                                            textAnchor="start"
+                                            fill="black"
+                                            fontSize="16"
+                                            style={{ pointerEvents: 'none' }}>
+                                            {line}
+                                        </text>
+                                    ))}
+                                </g>
+                            );
+                        }}
+                    />
 
-                <Scatter
-                    data={stabilizedVisibleData}
-                    shape={(props) => (
-                        <FloatingDot
-                            cx={props.cx}
-                            cy={props.cy}
-                            r={props.payload.size}
-                            payload={props.payload}
-                            fill={props.payload.fill}
-                            onMouseEnter={() => handleMouseEnter(props.payload)}
-                            onMouseLeave={() => handleMouseLeave(props.payload)}
-                        />
-                    )}
-                />
-            </ScatterChart>
+                    <Scatter
+                        data={stabilizedVisibleData}
+                        shape={(props) => (
+                            <FloatingDot
+                                cx={props.cx}
+                                cy={props.cy}
+                                r={props.payload.size}
+                                payload={props.payload}
+                                fill={props.payload.fill}
+                                onMouseEnter={() => handleMouseEnter(props.payload)}
+                                onMouseLeave={() => handleMouseLeave(props.payload)}
+                            />
+                        )}
+                    />
+                </ScatterChart>
+            </ResponsiveContainer>
         </div>
     );
 }

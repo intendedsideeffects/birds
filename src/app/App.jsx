@@ -15,7 +15,7 @@ const ExtinctSpeciesViz = ({ setBirdStories }) => {
   const [timelineData, setTimelineData] = useState([]); 
   const [isLoading, setIsLoading] = useState(false);
   const [prevDotCount, setPrevDotCount] = useState(0)
-  const [labelsHidden, setLabelsHidden] = useState(true);
+  const [isLegendOpen, setIsLegendOpen] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [windowHeight, setWindowHeight] = useState(0);
   const [dotsRendered, setDotsRendered] = useState(false);
@@ -184,15 +184,23 @@ const ExtinctSpeciesViz = ({ setBirdStories }) => {
     setDotsRendered(false);
   }, [scrollPosition]);
   
+  const toggleOpen = useCallback(() => {
+    setIsLegendOpen(prevState => !prevState);
+  }, []);
+
   return mounted ? (
     <div
       style={{
-        width: '100wv',
-        height: `${STATUS_HEIGHT - 1500}px`,
+        display: 'flex',
+        flexGrow: 1,
+        width: '100%',
         backgroundColor: 'white',
         color: 'black',
+        minHeight: '100vh',
+        overflowY: 'auto',
+        position: 'relative',
       }}>
-      <LabelsLeftPanel labelsHidden={labelsHidden} setLabelsHidden={setLabelsHidden} />
+      <LabelsLeftPanel isOpen={isLegendOpen} toggleOpen={toggleOpen} />
       <PlotsScatterChart timelineData={timelineData} visibleData={visibleData} />
     </div>
   ) : null;

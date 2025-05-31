@@ -168,19 +168,16 @@ body {
 
 .sliding-panel {
   position: fixed;
-  left: -200px; /* Hidden by default */
-  top: 50%;
-  transform: translateY(-30%);
-  width: 200px;
-  height: 400px;
+  top: 20px;
+  width: 400px;
+  z-index: 10;
+  left: -360px;
   background: none;
   transition: left 0.3s ease;
-  z-index: 1000;
-  margin-left: 20px;  /* Added margin to prevent cutoff */
 }
 
 .sliding-panel.open {
-  left: 0;
+  left: 20px;
 }
 
 .panel-tab {
