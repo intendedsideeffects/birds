@@ -22,14 +22,27 @@ export async function GET() {
 
 export async function PUT(request) {
   try {
-    const { species, story } = await request.json();
+    const { species, story, isFuture } = await request.json();
 
-    const { data, error } = await supabase
-      .from('bird_stories')
-      .update({ story })
-      .eq('species', species)
-      .select()
-      .single();
+    let updateOperation;
+
+    if (isFuture) {
+      updateOperation = supabase
+        .from('future_stories')
+        .update({ story })
+        .eq('species', species)
+        .select()
+        .single();
+    } else {
+      updateOperation = supabase
+        .from('bird_stories')
+        .update({ story })
+        .eq('species', species)
+        .select()
+        .single();
+    }
+
+    const { data, error } = await updateOperation;
 
     if (error) throw error;
 

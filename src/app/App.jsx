@@ -200,12 +200,18 @@ const ExtinctSpeciesViz = ({ setBirdStories }) => {
 
   const handleSendStory = async () => {
     try {
+      // Find the selected bird in the data array
+      const selectedBird = data.find(bird => bird.species === selectedSpecies);
+      
+      // Determine if the bird is from future data
+      const isFuture = selectedBird?.isFuture || false;
+
       const response = await fetch('/api/birds', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({species:selectedSpecies, story:selectedStory }),
+        body: JSON.stringify({ species: selectedSpecies, story: selectedStory, isFuture: isFuture }), // Include isFuture flag
       });
       const result =await response.json();
       setIsSendStorySuccess(result.status === 200 ? true: false);
