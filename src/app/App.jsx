@@ -222,92 +222,100 @@ const ExtinctSpeciesViz = ({ setBirdStories }) => {
   };
 
   return mounted ? (
-    <div
-      style={{
-        display: 'flex',
-        flexGrow: 1,
-        width: '100%',
-        backgroundColor: 'white',
-        color: 'black',
-        position: 'relative',
-      }}>
-      <LabelsLeftPanel isOpen={isLegendOpen} toggleOpen={toggleOpen}
-        // Pass AddStory related props to LabelsLeftPanel
-        setSelectedStory={setSelectedStory}
-        handleSendStory={handleSendStory}
-        birdStories={data.filter(d => d.story)} // Assuming 'data' contains all bird data with stories
-        selectedStory={selectedStory}
-        setSelectedSpecies={setSelectedSpecies}
-        errorSendStory={errorSendStory}
-        isSendStorySuccess={isSendStorySuccess}
-        setIsSendStorySuccess={setIsSendStorySuccess}
-        setErrorSendStory={setErrorSendStory}
-      />
-      <PlotsScatterChart timelineData={timelineData} visibleData={visibleData} />
-      {/* Floating Add Story Component */}
+    <>
       <div
         style={{
-          position: 'fixed', // Use fixed positioning for floating
-          top: '20px', // Align with the top of the legend panel
-          left: showFloatingAddStory ? '20px' : '-360px', // Toggle left position based on visibility
-          zIndex: 10, // Ensure it's above the scatterplot
-          width: '400px', // Match the legend panel width
-          transition: 'left 0.3s ease', // Add transition for smooth animation
+          display: 'flex',
+          flexGrow: 1,
+          width: '100%',
+          backgroundColor: 'white',
+          color: 'black',
+          position: 'relative',
         }}>
-        {/* Button to toggle floating Add Story form visibility (styled as a tab) */}
-        <div className="panel-tab" onClick={() => setShowFloatingAddStory(!showFloatingAddStory)}
+        <LabelsLeftPanel isOpen={isLegendOpen} toggleOpen={toggleOpen}
+          // Pass AddStory related props to LabelsLeftPanel
+          setSelectedStory={setSelectedStory}
+          handleSendStory={handleSendStory}
+          birdStories={data.filter(d => d.story)} // Assuming 'data' contains all bird data with stories
+          selectedStory={selectedStory}
+          setSelectedSpecies={setSelectedSpecies}
+          errorSendStory={errorSendStory}
+          isSendStorySuccess={isSendStorySuccess}
+          setIsSendStorySuccess={setIsSendStorySuccess}
+          setErrorSendStory={setErrorSendStory}
+        />
+        <PlotsScatterChart timelineData={timelineData} visibleData={visibleData} />
+        {/* Floating Add Story Component */}
+        <div
           style={{
-            position: 'absolute',
-            right: '-40px',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            width: '40px',
-            height: '120px',
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            border: '1px solid black',
-            borderLeft: 'none',
-            borderTopRightRadius: '8px',
-            borderBottomRightRadius: '8px',
-            transition: 'transform 0.3s ease, background-color 0.3s ease',
-          }}
-        >
-          <span style={{
-            writingMode: 'vertical-rl',
-            textOrientation: 'upright',
-            color: 'black',
-            textTransform: 'uppercase',
-            fontSize: '14px',
-            fontWeight: 'bold',
+            position: 'fixed', // Use fixed positioning for floating
+            top: '20px', // Align with the top of the legend panel
+            left: showFloatingAddStory ? '20px' : '-360px', // Toggle left position based on visibility
+            zIndex: 10, // Ensure it's above the scatterplot
+            width: '400px', // Match the legend panel width
+            transition: 'left 0.3s ease', // Add transition for smooth animation
           }}>
-            ADD STORY+
-          </span>
-        </div>
-        {/* Content area for the floating Add Story form */}
-        <div style={{ 
-            padding: '16px',
-            backgroundColor: 'rgba(255, 255, 255, 0.95)', // Add background like the legend content
-            height: 'calc(100vh - 40px)', // Make height fill remaining space (adjust 40px if needed for top/bottom spacing)
-            overflowY: 'auto', // Add scroll if content overflows
-          }}>
-          <AddStory
-            setSelectedStory={setSelectedStory}
-            handleSendStory={handleSendStory}
-            birdStories={data} // Pass the full data array
-            selectedStory={selectedStory}
-            setSelectedSpecies={setSelectedSpecies}
-            errorSendStory={errorSendStory}
-            isSendStorySuccess={isSendStorySuccess}
-            setIsSendStorySuccess={setIsSendStorySuccess}
-            setErrorSendStory={setErrorSendStory}
-            isVisible={true} // Form should be visible when panel is out
-          />
+          {/* Button to toggle floating Add Story form visibility (styled as a tab) */}
+          <div className="panel-tab" onClick={() => setShowFloatingAddStory(!showFloatingAddStory)}
+            style={{
+              position: 'absolute',
+              right: '-40px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              width: '40px',
+              height: '120px',
+              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '1px solid black',
+              borderLeft: 'none',
+              borderTopRightRadius: '8px',
+              borderBottomRightRadius: '8px',
+              transition: 'transform 0.3s ease, background-color 0.3s ease',
+            }}
+          >
+            <span style={{
+              writingMode: 'vertical-rl',
+              textOrientation: 'upright',
+              color: 'black',
+              textTransform: 'uppercase',
+              fontSize: '14px',
+              fontWeight: 'bold',
+            }}>
+              ADD STORY+
+            </span>
+          </div>
+          {/* Content area for the floating Add Story form */}
+          <div style={{ 
+              padding: '16px',
+              backgroundColor: 'rgba(255, 255, 255, 0.95)', // Add background like the legend content
+              height: 'calc(100vh - 40px)', // Make height fill remaining space (adjust 40px if needed for top/bottom spacing)
+              overflowY: 'auto', // Add scroll if content overflows
+            }}>
+            <AddStory
+              setSelectedStory={setSelectedStory}
+              handleSendStory={handleSendStory}
+              birdStories={data} // Pass the full data array
+              selectedStory={selectedStory}
+              setSelectedSpecies={setSelectedSpecies}
+              errorSendStory={errorSendStory}
+              isSendStorySuccess={isSendStorySuccess}
+              setIsSendStorySuccess={setIsSendStorySuccess}
+              setErrorSendStory={setErrorSendStory}
+              isVisible={true} // Form should be visible when panel is out
+            />
+          </div>
         </div>
       </div>
-    </div>
+      {/* Text below Scatterplot */}
+      <div className="font-geist-sans" style={{ width: '100%', textAlign: 'center', padding: '50vh 2rem 2rem 2rem' }}> {/* Applied Geist Sans font and increased top padding */}
+        <p className="text-4xl mb-8 text-black">Around 1350 bird species have gone extinct over the last 7000 years.</p>
+        <p className="text-4xl mb-8 text-black">That´s <span className="font-bold text-6xl">12,5%</span> of all species.</p>
+        <p className="text-4xl text-black">It is estimated that up to <span className="font-bold text-6xl">50%</span> of all bird species will go extinct by 2200.</p>
+      </div>
+    </>
   ) : null;
 };
 
