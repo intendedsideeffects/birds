@@ -7,52 +7,19 @@ const poemBlocks = [
     "LOSS",
   ],
   [
-    "Some losses don't happen in a single moment.",
-    "They unfold slowly, across generations.",
-    "Too quiet to notice.",
-    "Too vast to hold.",
+    "Birds are falling from the sky.",
+    "One, two - many!",
+    "An exponential loss of stories and sound.",
+    "And still, it goes unnoticed.",
   ],
   [
-    "This project is an attempt to feel that loss.",
+    "Where is our mind,",
+    "if not here,",
+    "now,",
+    "for our own collapse?",
   ],
   [
-    "A swarm of birds flies across a timeline.",
-    "As time passes, birds begin to fall.",
-  ],
-  [
-    "At first, just a few.",
-    "Then many.",
-    "Until it rains.",
-  ],
-  [
-    "Each fallen bird marks a species lost.",
-    "A story lost.",
-    "A sound lost.",
-  ],
-  [
-    "Slowness allows grief.",
-    "Scroll to enter a space of mourning.",
-  ],
-  [
-    "Each dot in the scatterplot is a species.",
-    "Some hold names. Some hold stories.",
-    "Some still carry sound.",
-  ],
-  [
-    "Hover to listen. Hover to remember.",
-  ],
-  [
-    "At the bottom, you can add a story.",
-    "Your words will shift a dot,",
-    "join the archive,",
-    "keep a memory alive.",
-  ],
-  [
-    "This is not just data.",
-    "It is a mourning ground—",
-    "an invitation to feel,",
-    "to witness,",
-    "to care.",
+    "Hold what we still can.",
   ]
 ];
 
