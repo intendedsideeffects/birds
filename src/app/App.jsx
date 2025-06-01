@@ -290,7 +290,7 @@ const ExtinctSpeciesViz = ({ setBirdStories }) => {
           <AddStory
             setSelectedStory={setSelectedStory}
             handleSendStory={handleSendStory}
-            birdStories={data.filter(d => d.story)} // Assuming 'data' contains all bird data with stories
+            birdStories={data} // Pass the full data array
             selectedStory={selectedStory}
             setSelectedSpecies={setSelectedSpecies}
             errorSendStory={errorSendStory}
