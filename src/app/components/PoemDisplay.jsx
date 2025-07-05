@@ -26,11 +26,11 @@ const poemBlocks = [
 const PoemDisplay = () => {
   return (
     <div
-      className="w-full bg-white text-black"
+      className="w-full text-black"
       style={{ 
         minHeight: '100vh',
         padding: '50vh 2rem 20vh 2rem',
-        backgroundColor: 'white'
+        backgroundColor: 'transparent'
       }}
     >
       <div className="max-w-3xl mx-auto">

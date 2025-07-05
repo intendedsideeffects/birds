@@ -6,6 +6,7 @@ import { VideoPlayer } from './components/video-player';
 // import ChronologyLoss from './components/ChronologyLossSection';
 import MiroSection from './components/MiroSection';
 import PoemDisplay from './components/PoemDisplay';
+// import HeroOverlay from './components/HeroOverlay';
 
 const DynamicChart2 = dynamic(() => import('./App'), {
   ssr: false,
@@ -50,11 +51,13 @@ export default function Home() {
 
   return (
     <main className="min-h-screen">
-      {/* Video Player positioned at the top */}
+      {/* Video at the top */}
       <VideoPlayer />
-
-      {/* Large white gap / Poem Display */}
+      {/* Poem below the video */}
       <PoemDisplay />
+
+      {/* Hero section with video and poem overlay */}
+      {/* <HeroOverlay /> */}
 
       {/* Content container for Scatterplot and Add Story */}
       <div id="content-container" className="relative z-10 w-full items-center justify-center font-mono text-sm pb-96 mt-20">
