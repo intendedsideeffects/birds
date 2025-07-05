@@ -60,8 +60,12 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.8); }
-  to { opacity: 1; transform: scale(1); }
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 2s ease-in;
 }
 
 .dot {
@@ -214,13 +218,18 @@ body {
 }
 
 .font-arial-sans {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Arial, Helvetica, sans-serif !important;
 }
 
 .recharts-cartesian-axis text {
   font-family: Arial, Helvetica, sans-serif !important;
 }
 
-.recharts-yAxis .recharts-cartesian-axis-tick text {
+.recharts-yAxis .recharts-cartesian-axis-tick text,
+.recharts-yAxis .recharts-cartesian-axis-label tspan {
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+#plot-container svg text {
   font-family: Arial, Helvetica, sans-serif !important;
 }

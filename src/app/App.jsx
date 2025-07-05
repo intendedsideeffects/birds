@@ -309,12 +309,6 @@ const ExtinctSpeciesViz = ({ setBirdStories }) => {
           </div>
         </div>
       </div>
-      {/* Text below Scatterplot */}
-      <div className="font-geist-sans" style={{ width: '100%', textAlign: 'center', padding: '50vh 2rem 2rem 2rem' }}> {/* Applied Geist Sans font and increased top padding */}
-        <p className="text-4xl mb-8 text-black">Around 1350 bird species have gone extinct over the last 7000 years.</p>
-        <p className="text-4xl mb-8 text-black">That´s <span className="font-bold text-6xl">12,5%</span> of all species.</p>
-        <p className="text-4xl text-black">It is estimated that up to <span className="font-bold text-6xl">50%</span> of all bird species will go extinct by 2200.</p>
-      </div>
     </>
   ) : null;
 };

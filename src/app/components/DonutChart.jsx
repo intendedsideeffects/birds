@@ -42,7 +42,9 @@ const DonutChart = ({
   data,
   width = 1200,
   height = 500,
-  colors = ['#222', '#bbb', '#eee']
+  colors = ['#e0b800', '#e0b800', '#e0b800'],
+  labelColor = '#e0b800',
+  lineColor = '#e0b800',
 }) => {
   const [hoveredIndex, setHoveredIndex] = useState(null);
   // Center the donut in the SVG
@@ -82,32 +84,35 @@ const DonutChart = ({
         const labelX = inflexX + (isRight ? horizontalLen : -horizontalLen);
         const labelY = inflexY;
         angleStart += angle;
+        // Set different opacities for each segment
+        const opacities = [1, 0.7, 0.4];
         return (
           <g key={d.name} onMouseEnter={() => setHoveredIndex(i)} onMouseLeave={() => setHoveredIndex(null)}>
             <path
               d={path}
-              fill={colors[i]}
-              opacity={isHovered ? 1 : 0.8}
+              fill={colors[i] || colors[0]}
+              opacity={isHovered ? 1 : opacities[i]}
               style={{ transition: 'all 0.2s' }}
             />
             {/* Connector line: outward then horizontal */}
             <polyline
               points={`${centroidX},${centroidY} ${inflexX},${inflexY} ${labelX},${labelY}`}
               fill="none"
-              stroke="#111"
+              stroke={lineColor}
               strokeWidth={2}
             />
             {/* Label */}
             <text
               x={labelX + (isRight ? 6 : -6)}
               y={labelY + 5}
+              fill={labelColor}
               textAnchor={isRight ? 'start' : 'end'}
-              fontSize={16}
+              fontSize={18}
               fontWeight={400}
-              fill="#111"
-              style={{ userSelect: 'none' }}
+              alignmentBaseline="middle"
+              style={{ pointerEvents: 'none' }}
             >
-              {`${d.name}: ${d.value}%`}
+              {d.name}
             </text>
           </g>
         );

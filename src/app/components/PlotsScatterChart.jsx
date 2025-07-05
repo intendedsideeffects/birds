@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useMemo, useCallback } from 'react';
-import { ScatterChart, Scatter, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { ScatterChart, Scatter, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, Label, ReferenceArea } from 'recharts';
 import getRegionColor from '../data/colorPointsData';
 import CustomTooltip from './CustomTooltip';
 import { FloatingDot } from './FloatingDot';
@@ -8,6 +8,8 @@ const STATUS_HEIGHT = 12500;
 const STATUS_WIDTH = 1600;
 
 function PlotsScatterChart({ timelineData, visibleData }) {
+    const PRESENT_YEAR = new Date().getFullYear();
+    // For demo/fixed: const PRESENT_YEAR = 2025;
     const audioRef = useRef(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [hoveredDot, setHoveredDot] = useState(null);
@@ -61,14 +63,16 @@ function PlotsScatterChart({ timelineData, visibleData }) {
             // Calculate y-coordinate for extinct birds without dates
             let yCoord = d.y;
             if (d.status === "Extinct" && !d.ext_date) {
-                // Convert 2024 to the appropriate y-coordinate using the same scale
                 const scale = STATUS_HEIGHT / (2200 - 1500);
                 yCoord = (2200 - 2024) * scale;
             }
-            
+            // Determine year for this dot
+            const year = d.year || d.event_year || d.ext_date || d.xYear;
+            const isFuture = year && year > PRESENT_YEAR;
             return {
                 ...d,
-                fill: d.fill || getStableColor(d.status),
+                fill: isFuture ? '#e0b800' : (d.fill || getStableColor(d.status)),
+                future: !!isFuture,
                 size: d.size || 5,
                 x: Math.round(d.x),
                 y: yCoord
@@ -77,13 +81,18 @@ function PlotsScatterChart({ timelineData, visibleData }) {
     }, [timelineData, getStableColor]);
 
     const stabilizedVisibleData = useMemo(() => {
-        return visibleData.map(d => ({
-            ...d,
-            fill: d.fill || getStableColor(d.status),
-            size: d.size || 5,
-            x: Math.round(d.x),
-            y: d.y
-        }));
+        return visibleData.map(d => {
+            const year = d.year || d.event_year || d.ext_date || d.xYear;
+            const isFuture = year && year > PRESENT_YEAR;
+            return {
+                ...d,
+                fill: isFuture ? '#e0b800' : (d.fill || getStableColor(d.status)),
+                future: !!isFuture,
+                size: d.size || 5,
+                x: Math.round(d.x),
+                y: d.y
+            };
+        });
     }, [visibleData, getStableColor]);
 
     // Debug: log status values for visible dots
@@ -93,6 +102,13 @@ function PlotsScatterChart({ timelineData, visibleData }) {
             console.log('First 5 dots:', stabilizedVisibleData.slice(0, 5));
         }
     }, [stabilizedVisibleData]);
+
+    // Calculate the y position for the NOW line and future background
+    const yearMin = 1500;
+    const yearMax = 2200;
+    const nowY = ((yearMax - PRESENT_YEAR) / (yearMax - yearMin)) * STATUS_HEIGHT;
+    const futureHeight = ((yearMax - PRESENT_YEAR) / (yearMax - yearMin)) * STATUS_HEIGHT;
+    const futureY = nowY;
 
     return (
         <div
@@ -113,6 +129,15 @@ function PlotsScatterChart({ timelineData, visibleData }) {
                         overflow: 'visible'
                     }}
                     margin={{ top: 20, right: 310, bottom: 80, left: 30 }}>
+                    {/* Vertical dashed line for NOW (PRESENT_YEAR) */}
+                    <ReferenceLine
+                        y={nowY}
+                        stroke="#e0b800"
+                        strokeDasharray="8 8"
+                        strokeWidth={3}
+                    >
+                        <Label value="NOW" position="right" offset={10} fill="#e0b800" fontSize={22} fontWeight="bold" />
+                    </ReferenceLine>
                     <XAxis
                         type="number"
                         dataKey="x"
@@ -132,7 +157,8 @@ function PlotsScatterChart({ timelineData, visibleData }) {
                             );
                             return year;
                         }}
-                        tick={{ fontSize: 18, fill: 'black', textAnchor: 'start', fontFamily: 'Arial, Helvetica, sans-serif' }}
+                        tick={{ fill: '#222', fontSize: 16, fontFamily: 'Arial, Helvetica, sans-serif' }}
+                        label={{ value: 'Extinction Rate', angle: -90, position: 'insideLeft', fill: '#222', fontSize: 16, fontFamily: 'Arial, Helvetica, sans-serif' }}
                         width={80}
                     />
                     <Tooltip 

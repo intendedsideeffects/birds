@@ -4,7 +4,7 @@ import React from 'react';
 
 const poemBlocks = [
   [
-    "LOSS",
+    // Removed title
   ],
   [
     "Birds are falling from the sky.",
@@ -18,22 +18,25 @@ const poemBlocks = [
     "now,",
     "for our own collapse?",
   ],
-  [
-    "Hold what we still can.",
-  ]
+  // Removed last line
 ];
 
 const PoemDisplay = () => {
   return (
     <div
-      className="w-full text-black"
+      className="w-full text-black flex justify-center items-start"
       style={{ 
         minHeight: '100vh',
         padding: '50vh 2rem 20vh 2rem',
-        backgroundColor: 'transparent'
+        backgroundColor: 'transparent',
       }}
     >
-      <div className="max-w-3xl mx-auto">
+      <div
+        style={{
+          maxWidth: '600px',
+          textAlign: 'left',
+        }}
+      >
         {poemBlocks.map((block, index) => (
           <div
             key={index}

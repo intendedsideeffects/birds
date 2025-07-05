@@ -61,9 +61,11 @@ export const FloatingDot = React.memo(
           cx={cx}
           cy={cy}
           r={isHovered ? baseSize * 3 : baseSize}
-          fill={dotFill}
+          fill={(payload.status === 'Extinct' || payload.status === 'EX') ? dotFill : '#e0b800'}
           style={{
-            opacity: r <= 6 ? 0.1 : (r === 10 ? 0.4 : 0.9), // Set opacity based on NEW size: small (<=6) 10%, medium (10) 40%, large (18) 90%
+            opacity: payload.future
+              ? (payload.sound ? 0.9 : (payload.story ? 0.5 : 0.2))
+              : (r <= 6 ? 0.1 : (r === 10 ? 0.4 : 0.9)),
           }}
         />
 
