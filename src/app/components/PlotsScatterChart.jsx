@@ -152,14 +152,54 @@ function PlotsScatterChart({ timelineData, visibleData }) {
                         orientation="right"
                         ticks={timelineData.map((mark) => mark.y)}
                         tickFormatter={(value) => {
-                            const year = Math.round(
-                                2200 - (value / STATUS_HEIGHT) * (2200 - 1500)
-                            );
+                            // Map y-value to year (top = 1500, bottom = 2200)
+                            const year = Math.round(1500 + (value / STATUS_HEIGHT) * (2200 - 1500));
                             return year;
                         }}
-                        tick={{ fill: '#222', fontSize: 16, fontFamily: 'Arial, Helvetica, sans-serif' }}
-                        label={{ value: 'Extinction Rate', angle: -90, position: 'insideLeft', fill: '#222', fontSize: 16, fontFamily: 'Arial, Helvetica, sans-serif' }}
-                        width={80}
+                        tick={(props) => {
+                            // Map y-value to year
+                            const year = Math.round(1500 + (props.y / STATUS_HEIGHT) * (2200 - 1500));
+                            const isFuture = year > PRESENT_YEAR;
+                            return (
+                                <text
+                                    x={props.x + 8}
+                                    y={props.y + 4}
+                                    fontSize={16}
+                                    fill={isFuture ? '#e0b800' : '#000'}
+                                    textAnchor="start"
+                                >
+                                    {year}
+                                </text>
+                            );
+                        }}
+                        axisLine={(props) => {
+                            // Calculate the y-pixel for PRESENT_YEAR (2025) using the same formula as the NOW line
+                            const yearMin = 1500;
+                            const yearMax = 2200;
+                            const nowY = ((yearMax - PRESENT_YEAR) / (yearMax - yearMin)) * STATUS_HEIGHT;
+                            return (
+                                <g>
+                                    {/* Black line from top to NOW */}
+                                    <line
+                                        x1={props.x}
+                                        y1={0}
+                                        x2={props.x}
+                                        y2={nowY}
+                                        stroke="#000"
+                                        strokeWidth={2}
+                                    />
+                                    {/* Yellow line from NOW to bottom */}
+                                    <line
+                                        x1={props.x}
+                                        y1={nowY}
+                                        x2={props.x}
+                                        y2={STATUS_HEIGHT}
+                                        stroke="#e0b800"
+                                        strokeWidth={2}
+                                    />
+                                </g>
+                            );
+                        }}
                     />
                     <Tooltip 
                         content={<CustomTooltip />}
@@ -188,6 +228,12 @@ function PlotsScatterChart({ timelineData, visibleData }) {
                                 lines.push(currentLine);
                             }
 
+                            // Only make the specific event yellow
+                            const isSpecialEvent =
+                                props.payload.event ===
+                                    'Conservative predictions expect 12.5% of all global bird species to go extinct by 2100. Many scientists expect the real number to be significantly higher.';
+                            const textColor = isSpecialEvent ? '#e0b800' : '#222';
+
                             return (
                                 <g style={{ pointerEvents: 'none' }}>
                                     {lines.map((line, i) => (
@@ -196,7 +242,7 @@ function PlotsScatterChart({ timelineData, visibleData }) {
                                             x={props.cx + 100}
                                             y={props.cy + i * 18}
                                             textAnchor="start"
-                                            fill="black"
+                                            fill={textColor}
                                             fontSize="16"
                                             style={{ pointerEvents: 'none' }}>
                                             {line}
