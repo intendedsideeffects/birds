@@ -2,13 +2,11 @@
 
 import { useState, useRef } from 'react';
 
-export function VideoPlayer() {
+export function VideoPlayer({ onPlay }) {
   const [isPlaying, setIsPlaying] = useState(true);
   const videoRef = useRef();
 
-
-
-  const togglePlay =() =>{
+  const togglePlay = () => {
     if (videoRef.current) {
       if (isPlaying) {
         videoRef.current.pause();
@@ -17,17 +15,23 @@ export function VideoPlayer() {
       }
       setIsPlaying(!isPlaying);
     }
-  }
+  };
+
+  const handlePlay = () => {
+    if (onPlay) onPlay();
+  };
 
   return (
-    <div className="relative w-full h-[99.9vh] flex flex-col justify-center items-center overflow-hidden" style={{ top: 0 }}>
+    <div className="relative w-full h-full flex flex-col justify-center items-center overflow-hidden" style={{ top: 0 }}>
       <video
         ref={videoRef}
         className="w-full h-full object-cover object-center"
         loop
         muted
         playsInline
-        autoPlay={true}>
+        autoPlay={true}
+        onPlay={handlePlay}
+      >
         <source src="/Birds_Final_UHD_noHUD.mp4" type="video/mp4" />
       </video>
       <div className="absolute inset-0 z-10 pointer-events-none" />

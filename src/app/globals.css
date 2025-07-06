@@ -233,3 +233,14 @@ body {
 #plot-container svg text {
   font-family: Arial, Helvetica, sans-serif !important;
 }
+
+/* Force all SVG and Recharts backgrounds to be transparent */
+svg, .recharts-surface, .recharts-wrapper, .recharts-responsive-container, .chart-transparent-debug {
+  background: none !important;
+  fill: none !important;
+}
+
+body, html, #__next, main, .min-h-screen {
+  background: none !important;
+  background-color: transparent !important;
+}

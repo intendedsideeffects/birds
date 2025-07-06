@@ -5,13 +5,13 @@ import { BirdLoader } from './components/Bird-loader';
 import historicalEvents from "../app/data/historicalPoints"
 import birdArr from './data/birdArray';
 import LabelsLeftPanel from './components/LabelsLeftPanel';
-import PlotsScatterChart from './components/PlotsScatterChart';
+import AnimatedLineChart from './components/AnimatedLineChart';
 import AddStory from './components/AddStory';
 import processHistoricalData from './utils/processHistoricalData';
 import processFutureData from './utils/processFutureData';
 import { supabase } from './utils/supabaseClient';
 
-const ExtinctSpeciesViz = ({ setBirdStories }) => {
+const ExtinctSpeciesViz = ({ setBirdStories, startAnimation }) => {
   const [data, setData] = useState([]);
   const [timelineData, setTimelineData] = useState([]); 
   const [isLoading, setIsLoading] = useState(false);
@@ -227,7 +227,7 @@ const ExtinctSpeciesViz = ({ setBirdStories }) => {
           setIsSendStorySuccess={setIsSendStorySuccess}
           setErrorSendStory={setErrorSendStory}
         />
-        <PlotsScatterChart timelineData={timelineData} visibleData={visibleData} />
+        <AnimatedLineChart startAnimation={startAnimation} />
         {/* Floating Add Story Component */}
         <div
           style={{

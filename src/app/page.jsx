@@ -11,16 +11,52 @@ import TransitionToLossSection from './components/TransitionToLossSection';
 // import HeroOverlay from './components/HeroOverlay';
 import DonutChart from './components/DonutChart';
 
-const DynamicChart2 = dynamic(() => import('./App'), {
+const AnimatedLineChart = dynamic(() => import('./components/AnimatedLineChart'), {
   ssr: false,
   loading: () => <div>Loading visualization...</div>,
 });
 
+const VIDEO_HEIGHT = '100vh';
+const CHART_HEIGHT = 400; // px
+const CHART_OFFSET = 30; // px, move chart down by this amount
+
 export default function Home() {
+  const [startAnimation, setStartAnimation] = useState(false);
+  const [videoKey, setVideoKey] = useState(0);
+
+  const handleVideoPlay = () => {
+    setStartAnimation(false); // Reset first to allow restart
+    setTimeout(() => setStartAnimation(true), 0); // Start animation in next tick
+  };
+
   return (
     <main className="min-h-screen">
-      {/* Video at the top */}
-      <VideoPlayer />
+      {/* Video at the top with overlay chart */}
+      <div
+        style={{
+          position: 'relative',
+          width: '100%',
+          height: `calc(${VIDEO_HEIGHT} + ${CHART_HEIGHT + CHART_OFFSET}px)`,
+          background: 'transparent',
+          overflow: 'hidden',
+        }}
+      >
+        <VideoPlayer key={videoKey} onPlay={handleVideoPlay} />
+        <div
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: `-${CHART_OFFSET}px`,
+            width: '100%',
+            height: CHART_HEIGHT,
+            pointerEvents: 'none',
+            zIndex: 20,
+          }}
+        >
+          <AnimatedLineChart startAnimation={startAnimation} overlay={true} />
+        </div>
+      </div>
       {/* Poem below the video */}
       <PoemDisplay />
 
@@ -43,7 +79,7 @@ export default function Home() {
         <TransitionToLossSection />
 
         {/* Scatterplot Section */}
-        <DynamicChart2 />
+        {/* <DynamicChart2 /> */}
 
         {/* Add yellow donut chart directly under the scatterplot */}
         <section className="w-full max-w-6xl mx-auto py-32 px-8 flex flex-col items-center font-arial-sans">
