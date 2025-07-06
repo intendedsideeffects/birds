@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect, useRef, useMemo, useCallback, useLayoutEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback, useLayoutEffect } from 'react';
 import { debounce } from 'lodash';
 import { BirdLoader } from './components/Bird-loader';
 import historicalEvents from "../app/data/historicalPoints"
@@ -7,7 +7,7 @@ import birdArr from './data/birdArray';
 import LabelsLeftPanel from './components/LabelsLeftPanel';
 import PlotsScatterChart from './components/PlotsScatterChart';
 import AddStory from './components/AddStory';
-import { processHistoricalData } from './utils/processHistoricalData';
+import processHistoricalData from './utils/processHistoricalData';
 import processFutureData from './utils/processFutureData';
 import { supabase } from './utils/supabaseClient';
 
@@ -70,7 +70,6 @@ const ExtinctSpeciesViz = ({ setBirdStories }) => {
         ...removeRandomDots([...processedHistorical, ...processedFuture]),
         ...birdArr,
       ]);
-      setBirdStories(historicalData);
 
       const timelineMarks = [];
       for (let year = 1500; year <= 2200; year += 100) {
@@ -103,24 +102,8 @@ const ExtinctSpeciesViz = ({ setBirdStories }) => {
   //this function is used to optimize the rendering of the dots to help the performance of the scatter chart
   //it is used together with visibleData to render de dots depending on the scroll position
   const handleScroll = () => {
-    // if (!isLoading) {
-    //   requestAnimationFrame(() => {
-    //     setIsLoading(true);
-    //   });
-    // }
-      const visibleDotsCount = visibleData.length;
-  const processingTime = Math.min(visibleDotsCount * 0.5, 1000)
-    const container = document.getElementById('plot-container');
-    if (!container) return;
+    const visibleDotsCount = visibleData.length;
     setScrollPosition(window.scrollY);
-    const plotEnd = container.offsetTop + container.offsetHeight;
-    const scrollPositions = window.scrollY + 200;
-
-  // setTimeout(() => {
-  //   requestAnimationFrame(() => {
-  //     setIsLoading(false);
-  //   });
-  // }, processingTime);
   } 
   
 

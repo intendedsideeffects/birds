@@ -90,7 +90,7 @@ const processFutureData = (data) => {
 export default processFutureData;
 
 // 🔽 Add this fetcher function at the bottom
-import { supabase } from './supabaseClient'; // adjust relative path
+// Removed unused supabase import
 
 export async function fetchAndProcessFutureData() {
   const { data, error } = await supabase.from('future_stories').select('*');

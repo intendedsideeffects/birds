@@ -1,5 +1,3 @@
-import { supabase } from './supabaseClient';
-
 const STATUS_HEIGHT = 12500;
 const STATUS_WIDTH = 1600;
 
@@ -69,4 +67,4 @@ export async function fetchAndProcessHistoricalData() {
   return processHistoricalData(data);
 }
 
-export { processHistoricalData };
+export default processHistoricalData;

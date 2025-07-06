@@ -2,22 +2,13 @@ import { supabase } from '../../utils/supabaseClient';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  try {
-    const { data, error } = await supabase
-      .from('bird_stories')
-      .select('*')
-      .order('ext_date', { ascending: true });
-
-    if (error) throw error;
-
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error('Database Error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch bird data' },
-      { status: 500 }
-    );
+  const { data, error } = await supabase
+    .from('bird_stories')
+    .select('*');
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
+  return NextResponse.json(data);
 }
 
 export async function PUT(request) {

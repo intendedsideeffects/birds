@@ -9,50 +9,14 @@ import PoemDisplay from './components/PoemDisplay';
 import StorytellingSection from './components/StorytellingSection';
 import TransitionToLossSection from './components/TransitionToLossSection';
 // import HeroOverlay from './components/HeroOverlay';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
 import DonutChart from './components/DonutChart';
 
 const DynamicChart2 = dynamic(() => import('./App'), {
   ssr: false,
   loading: () => <div>Loading visualization...</div>,
-  
 });
 
 export default function Home() {
-  const [birdStories, setBirdStories] = useState([]);
-  const [news, setNews] = useState([]);
-
-  useEffect(() => {
-    const fetchBirds = async () => {
-      try {
-        const res = await fetch('/api/birds');
-        if (!res.ok) {
-          throw new Error(`Error fetching birds: ${res.status}`);
-        }
-        const data = await res.json();
-        setBirdStories(data);
-      } catch (error) {
-        console.error('Failed to fetch historical birds:', error);
-      }
-    };
-
-    fetchBirds();
-  }, []);
-
-  const fetchNews = async () => {
-    try {
-      const responseNews = await fetch('/api/news');
-      const dataNews = await responseNews.json();
-      setNews(dataNews);
-    } catch (error) {
-      console.error('Error fetching news:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchNews();
-  }, []);
-
   return (
     <main className="min-h-screen">
       {/* Video at the top */}
@@ -79,7 +43,7 @@ export default function Home() {
         <TransitionToLossSection />
 
         {/* Scatterplot Section */}
-        <DynamicChart2 setBirdStories={setBirdStories} />
+        <DynamicChart2 />
 
         {/* Add yellow donut chart directly under the scatterplot */}
         <section className="w-full max-w-6xl mx-auto py-32 px-8 flex flex-col items-center font-arial-sans">
