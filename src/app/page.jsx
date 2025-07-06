@@ -81,20 +81,30 @@ export default function Home() {
         {/* Scatterplot Section */}
         <DynamicChart2 setBirdStories={setBirdStories} />
 
-        {/* Extinction risk and prognosis text as three scrollable segments */}
-        <section className="w-full font-arial-sans">
-          <div className="min-h-screen flex items-center justify-center">
-            <p className="text-4xl md:text-5xl font-bold text-[#e0b800] text-center max-w-4xl">
-              Over 1,400 bird species are currently threatened with extinction.
-            </p>
+        {/* Add yellow donut chart directly under the scatterplot */}
+        <section className="w-full max-w-6xl mx-auto py-32 px-8 flex flex-col items-center font-arial-sans">
+          <h2 className="text-3xl md:text-4xl font-bold mb-16 font-arial-sans text-left mx-auto" style={{color: '#e0b800', maxWidth: '900px'}}>
+            Nearly half of all bird species are in trouble, with many facing an uncertain future.
+          </h2>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', marginBottom: '30vh' }}>
+            <DonutChart
+              data={[
+                { name: 'Endangered', value: 23.8 },
+                { name: 'Declining', value: 26.2 },
+                { name: 'Stable/Increasing', value: 50 },
+              ]}
+              width={1200}
+              height={600}
+              colors={['#e0b800', '#e0b800', '#e0b800']}
+              labelColor="#e0b800"
+              lineColor="#e0b800"
+            />
           </div>
-          <div className="min-h-screen flex items-center justify-center">
-            <p className="text-3xl md:text-4xl text-[#e0b800] text-center max-w-3xl">
-              If current trends continue, scientists project that up to <span className="font-bold">30%</span> of all bird species could be extinct or facing extinction by 2100.
+          <div className="w-full flex flex-col items-center">
+            <p className="text-3xl md:text-4xl font-bold font-arial-sans text-left mx-auto" style={{color: '#e0b800', maxWidth: '900px', marginBottom: '60vh'}}>
+              Over 1,400 bird species are currently threatened with extinction. If current trends continue, scientists project that up to <span className="font-bold">30%</span> of all bird species could be extinct or facing extinction by 2100.
             </p>
-          </div>
-          <div className="min-h-screen flex items-center justify-center">
-            <p className="text-3xl md:text-4xl text-[#e0b800] text-center max-w-3xl">
+            <p className="text-3xl md:text-4xl font-bold font-arial-sans text-left mx-auto" style={{color: '#e0b800', maxWidth: '900px', marginTop: 0}}>
               By 2200, this number could rise to <span className="font-bold">50%</span> of all bird species if threats are not addressed.
             </p>
           </div>
@@ -109,26 +119,6 @@ export default function Home() {
         {/* Removed success message */}
         {/* Removed error message */}
       </div>
-      {/* Add yellow donut chart and title at the very bottom */}
-      <section className="w-full max-w-6xl mx-auto py-32 px-8 flex flex-col items-center font-arial-sans">
-        <h2 className="text-3xl md:text-4xl font-bold mb-16 font-arial-sans text-left mx-auto" style={{maxWidth: '900px', color: '#e0b800'}}>
-          Nearly half of all bird species are in trouble, with many facing an uncertain future. This represents a critical moment for conservation efforts worldwide.
-        </h2>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-          <DonutChart
-            data={[
-              { name: 'Endangered', value: 23.8 },
-              { name: 'Declining', value: 26.2 },
-              { name: 'Stable/Increasing', value: 50 },
-            ]}
-            width={1200}
-            height={600}
-            colors={['#e0b800', '#e0b800', '#e0b800']}
-            labelColor="#e0b800"
-            lineColor="#e0b800"
-          />
-        </div>
-      </section>
     </main>
   );
 }
