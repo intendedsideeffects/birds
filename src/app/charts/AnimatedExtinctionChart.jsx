@@ -49,6 +49,7 @@ export default function AnimatedExtinctionChart() {
   const [stage, setStage] = useState(0); // 0: background, 1: animated bars
   const [showOverlay, setShowOverlay] = useState(true);
   const [maxY, setMaxY] = useState(1); // max y for axis, only increases
+  const [isManualControl, setIsManualControl] = useState(true); // Start in manual control mode
   const intervalRef = useRef(null);
 
   // Load and preprocess data
@@ -64,62 +65,57 @@ export default function AnimatedExtinctionChart() {
     });
   }, []);
 
-  // Animation sequence
+  // Animation sequence - disabled for manual control only
   useEffect(() => {
-    if (data.length === 0) return;
-    let timeout;
-    if (stage === 0) {
-      setShowOverlay(true);
-      setBarEndIndex(0);
-      setMaxY(1); // Reset to 1 for background only
-      timeout = setTimeout(() => setStage(1), PAUSE_BETWEEN);
-    } else if (stage === 1) {
-      setShowOverlay(true);
-      let i = barEndIndex;
-      if (intervalRef.current) clearInterval(intervalRef.current);
-      intervalRef.current = setInterval(() => {
-        i++;
-        setBarEndIndex(prev => {
-          const next = prev + 1;
-          // Find max of visible bars
-          const visible = data.slice(0, next);
-          const localMax = Math.max(1, ...visible.map(d => d.birds_falling));
-          setMaxY(prevMax => (localMax > prevMax ? localMax : prevMax));
-          if (next >= data.length) {
-            clearInterval(intervalRef.current);
-            setTimeout(() => setShowOverlay(false), PAUSE_BETWEEN);
-            return data.length;
-          }
-          return next;
-        });
-      }, ANIMATION_INTERVAL);
-      return () => clearInterval(intervalRef.current);
-    }
-    return () => clearTimeout(timeout);
-  }, [data, stage]);
+    if (data.length === 0) return; // Remove auto-animation completely
+    // Only show background line initially
+    setStage(1); // Always in bar stage for manual control
+    setShowOverlay(false); // No overlay in manual mode
+  }, [data]);
+
+  // Handle slider change
+  const handleSliderChange = (event) => {
+    const value = parseInt(event.target.value);
+    setBarEndIndex(value);
+    
+    // Calculate maxY for the current position - allow it to decrease when moving backward
+    const visible = data.slice(0, value);
+    const localMax = Math.max(1, ...visible.map(d => d.birds_falling));
+    setMaxY(localMax); // Always set to current max, allowing decrease
+  };
 
   // Prepare chart data for current animation
-  const animatedBar = data.slice(0, barEndIndex).map(d => ({
+  // Show all bars but with opacity based on whether they should be visible
+  const animatedBar = data.map((d, index) => ({
     year: d.year,
-    birds_falling: d.birds_falling,
-    fill: d.year > SPLIT_YEAR ? MUSTARD : "#000"
+    birds_falling: index < barEndIndex ? d.birds_falling : 0, // Set to 0 if beyond current position
+    fill: d.year > 2025 ? MUSTARD : "#000", // All bars after 2025 are mustard yellow
+    opacity: index < barEndIndex ? 0.8 : 0 // Hide bars beyond current position
   }));
 
-  // Overlay style
-  const overlayStyle = {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100vw",
-    height: "100vh",
+
+
+  // Slider and controls style
+  const controlsStyle = {
+    position: "fixed",
+    top: 40,
+    left: "50%",
+    transform: "translateX(-50%)",
+    zIndex: 20,
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
-    background: "rgba(255,255,255,0.7)",
-    zIndex: 10,
-    pointerEvents: "none",
-    opacity: showOverlay ? 1 : 0,
-    transition: "opacity 0.8s"
+    gap: "10px",
+    minWidth: "300px"
+  };
+
+  const sliderStyle = {
+    width: "300px",
+    height: "6px",
+    borderRadius: "3px",
+    background: "#ddd",
+    outline: "none",
+    WebkitAppearance: "none",
+    cursor: "pointer"
   };
 
   // Find max y for fixed axis in stage 0
@@ -127,32 +123,73 @@ export default function AnimatedExtinctionChart() {
 
   return (
     <div style={{ width: "100vw", height: "100vh", position: "fixed", top: 0, left: 0, background: "#fff", zIndex: 0 }}>
-      {/* Storytelling overlay */}
-      <div style={overlayStyle}>
-        <div style={{ fontSize: "2rem", maxWidth: 600, textAlign: "center", color: "#222", fontWeight: 600, textShadow: "0 2px 8px #fff" }}>
-          {stage === 0 ? EXPLANATIONS[0] : EXPLANATIONS[1]}
-        </div>
+      {/* Custom slider styles */}
+      <style>{`
+        input[type="range"]::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background: #000;
+          cursor: pointer;
+        }
+        input[type="range"]::-moz-range-thumb {
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background: #000;
+          cursor: pointer;
+          border: none;
+        }
+      `}</style>
+      
+
+      
+      {/* Minimalist slider at top */}
+      <div style={controlsStyle}>
+        <input
+          type="range"
+          min="0"
+          max={data.length}
+          value={barEndIndex}
+          onChange={handleSliderChange}
+          style={sliderStyle}
+        />
       </div>
+
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={stage === 0 ? [] : animatedBar} margin={{ top: 40, right: 40, left: 40, bottom: 40 }}>
-          <XAxis dataKey="year" type="number" domain={["dataMin", 2200]} tickFormatter={y => y.toString()}>
-            <Label value="Year (25-year bins)" offset={-10} position="insideBottom" />
+        <BarChart data={animatedBar} margin={{ top: 40, right: 40, left: 40, bottom: 40 }}>
+          <XAxis dataKey="year" type="number" domain={["dataMin", 2200]} tickFormatter={y => y.toString()} stroke="#000" tick={{ fill: "#000" }}>
+            <Label value="Year (25-year bins)" offset={-10} position="insideBottom" fill="#000" />
           </XAxis>
-          <YAxis domain={[0, maxY]}>
-            <Label value="Birds Falling" angle={-90} position="insideLeft" />
+          <YAxis domain={[0, maxY]} stroke="#000" tick={{ fill: "#000" }}>
+            <Label value="Extinctions" angle={-90} position="insideLeft" fill="#000" />
           </YAxis>
           <Tooltip />
-          {stage !== 0 && (
-            <Bar dataKey="birds_falling" isAnimationActive={false} opacity={0.8}>
-              {animatedBar.map((entry, index) => (
-                <cell key={`cell-${index}`} fill={entry.fill} />
-              ))}
-            </Bar>
-          )}
+          <Bar dataKey="birds_falling" isAnimationActive={false} fill="#000">
+            {animatedBar.map((entry, index) => (
+              <cell key={`cell-${index}`} fill={entry.fill} opacity={entry.opacity} />
+            ))}
+          </Bar>
           {/* Overlay background extinction rate line */}
-          <ReferenceLine y={BACKGROUND_RATE} stroke="#888" strokeDasharray="4 4" strokeWidth={3} label={{ value: "Background extinction rate", position: "right", fill: "#888", fontWeight: 600, fontSize: 16 }} />
+          <ReferenceLine y={BACKGROUND_RATE} stroke="#DDA0DD" strokeDasharray="4 4" strokeWidth={3} />
         </BarChart>
       </ResponsiveContainer>
+      {/* Small purple text for background extinction rate */}
+      <div style={{
+        position: "absolute",
+        left: 128,
+        top: `calc(40px + ${(1 - BACKGROUND_RATE / maxY) * 100}% - 76px)`, // 2cm above the line
+        color: "#DDA0DD",
+        fontSize: 16,
+        fontWeight: 500,
+        pointerEvents: "none",
+        background: "#fff",
+        padding: "0 4px"
+      }}>
+        This is the normal background extinction rate: 0.25 extinctions per 100 years
+      </div>
     </div>
   );
 } 
