@@ -1,14 +1,11 @@
 "use client";
 import React from "react";
-import BirdExtinctionLineChart from "../BirdExtinctionLineChart";
+import AnimatedExtinctionChart from "../AnimatedExtinctionChart";
 
 export default function LineChartPage() {
   return (
-    <div style={{ padding: "2rem", background: "#fff", minHeight: "100vh" }}>
-      <h1 style={{ fontSize: "2rem", marginBottom: "1rem" }}>
-        Bird Extinction Over Time
-      </h1>
-      <BirdExtinctionLineChart />
+    <div style={{ padding: 0, background: "#fff", minHeight: "100vh" }}>
+      <AnimatedExtinctionChart />
     </div>
   );
 } 
