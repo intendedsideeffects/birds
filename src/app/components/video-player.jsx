@@ -22,7 +22,17 @@ export function VideoPlayer({ onPlay }) {
   };
 
   return (
-    <div className="relative w-full h-full flex flex-col justify-center items-center overflow-hidden" style={{ top: 0 }}>
+    <div
+      className="relative w-full h-full flex flex-col justify-center items-center overflow-hidden"
+      style={{
+        top: 0,
+        border: 'none',
+        outline: 'none',
+        margin: 0,
+        padding: 0,
+        background: 'white',
+      }}
+    >
       <video
         ref={videoRef}
         className="w-full h-full object-cover object-center"
@@ -31,9 +41,30 @@ export function VideoPlayer({ onPlay }) {
         playsInline
         autoPlay={true}
         onPlay={handlePlay}
+        style={{
+          display: 'block',
+          width: '100%',
+          height: '100%',
+          border: 'none',
+          outline: 'none',
+          background: 'white',
+          margin: 0,
+          padding: 0,
+        }}
       >
         <source src="/Birds_Final_UHD_noHUD.mp4" type="video/mp4" />
       </video>
+      {/* White overlay to cover any black line at the bottom edge of the video */}
+      <div style={{
+        position: 'absolute',
+        left: 0,
+        bottom: 0,
+        width: '100%',
+        height: '12px',
+        background: 'white',
+        zIndex: 9999,
+        pointerEvents: 'none',
+      }} />
       <div className="absolute inset-0 z-10 pointer-events-none" />
 
       <div className="absolute inset-0 flex flex-col items-center justify-center">

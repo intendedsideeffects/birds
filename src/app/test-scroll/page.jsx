@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 const poemLines = [
   "Birds are falling from the sky.",
@@ -16,7 +16,9 @@ const poemLines = [
 export default function TestScroll() {
   const [isPlaying, setIsPlaying] = useState(true);
   const videoRef = useRef();
+  const poemWrapperRef = useRef();
 
+  // Pause/play logic for video
   const togglePlay = () => {
     if (videoRef.current) {
       if (isPlaying) {
@@ -29,7 +31,7 @@ export default function TestScroll() {
   };
 
   return (
-    <div style={{ width: '100%', minHeight: '300vh', background: '#f8f8f8' }}>
+    <div style={{ width: '100%', minHeight: '300vh', background: '#f8f8f8', position: 'relative' }}>
       {/* Video Section */}
       <section style={{ position: 'relative', height: '100vh', width: '100%', background: '#222', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
         <video
@@ -47,9 +49,9 @@ export default function TestScroll() {
           left: 0,
           bottom: 0,
           width: '100%',
-          height: '6px',
+          height: '14px',
           background: 'white',
-          zIndex: 2,
+          zIndex: 10,
           pointerEvents: 'none',
         }} />
         {/* Centered LOSS title and pause/play button */}
@@ -63,7 +65,7 @@ export default function TestScroll() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          zIndex: 3,
+          zIndex: 11,
           pointerEvents: 'none',
         }}>
           <h1 style={{
@@ -91,9 +93,7 @@ export default function TestScroll() {
           <button
             onClick={togglePlay}
             style={{
-              background: 'rgba(255,255,255,0.1)',
-              backdropFilter: 'blur(4px)',
-              WebkitBackdropFilter: 'blur(4px)',
+              background: 'transparent',
               border: 'none',
               borderRadius: '50%',
               width: '2.2rem',
@@ -104,49 +104,78 @@ export default function TestScroll() {
               alignItems: 'center',
               justifyContent: 'center',
               marginBottom: '0',
-              transition: 'background 0.2s',
               pointerEvents: 'auto',
             }}
-            onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
-            onMouseOut={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+            aria-label={isPlaying ? 'Pause video' : 'Play video'}
           >
-            {isPlaying ? '⏸' : '▶'}
+            {isPlaying ? (
+              <svg width="1.2rem" height="1.2rem" viewBox="0 0 28 28" style={{ display: 'block' }}>
+                <rect x="7" y="5" width="4" height="18" fill="black" />
+                <rect x="17" y="5" width="4" height="18" fill="black" />
+              </svg>
+            ) : (
+              <svg width="1.2rem" height="1.2rem" viewBox="0 0 28 28" style={{ display: 'block' }}>
+                <polygon points="8,5 22,14 8,23" fill="black" />
+              </svg>
+            )}
           </button>
         </div>
       </section>
 
-      {/* Poem Section (plain white, fullscreen) */}
+      {/* White overlay at the seam between video and poem */}
+      <div style={{
+        position: 'absolute',
+        top: '100vh',
+        left: 0,
+        width: '100%',
+        height: '14px',
+        background: 'white',
+        zIndex: 9999,
+        pointerEvents: 'none',
+      }} />
+
+      {/* Poem Section (no overlay) */}
       <section
+        ref={poemWrapperRef}
         style={{
+          position: 'relative',
           height: '100vh',
           width: '100%',
           background: 'white',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          position: 'relative',
         }}
       >
-        <div style={{
-          color: 'black',
-          fontSize: '1.5rem',
-          maxWidth: '600px',
-          textAlign: 'left',
-          fontFamily: 'Arial, Helvetica, sans-serif',
-          fontWeight: 400,
-          lineHeight: 1.5,
-          zIndex: 2,
-          position: 'relative',
-        }}>
-          {poemLines.map((line, idx) => (
-            <p key={idx} style={{ marginBottom: '2rem', fontSize: '1.5rem', fontWeight: 400, letterSpacing: '-0.01em' }}>{line}</p>
-          ))}
+        {/* Sticky poem content */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'white',
+            flexDirection: 'column',
+            pointerEvents: 'auto',
+          }}
+        >
+          <div style={{
+            color: 'black',
+            fontSize: '1.5rem',
+            maxWidth: '600px',
+            textAlign: 'left',
+            fontFamily: 'Arial, Helvetica, sans-serif',
+            fontWeight: 400,
+            lineHeight: 1.5,
+            zIndex: 2,
+            position: 'relative',
+          }}>
+            {poemLines.map((line, idx) => (
+              <p key={idx} style={{ marginBottom: '2rem', fontSize: '1.5rem' }}>{line}</p>
+            ))}
+          </div>
         </div>
-      </section>
-
-      {/* Following Section */}
-      <section style={{ minHeight: '120vh', width: '100%', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ color: '#888', fontSize: '2rem' }}>CONTENT PLACEHOLDER</div>
       </section>
     </div>
   );
