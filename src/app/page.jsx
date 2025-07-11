@@ -10,6 +10,8 @@ import StorytellingSection from './components/StorytellingSection';
 import TransitionToLossSection from './components/TransitionToLossSection';
 // import HeroOverlay from './components/HeroOverlay';
 import DonutChart from './components/DonutChart';
+import QuestionTransitionSection from './components/QuestionTransitionSection';
+import PoemToQuestionTransition from './components/PoemToQuestionTransition';
 
 const DynamicChart2 = dynamic(() => import('./App'), {
   ssr: false,
@@ -21,26 +23,16 @@ export default function Home() {
     <main className="min-h-screen">
       {/* Video at the top */}
       <VideoPlayer />
-      {/* Poem below the video, with white background and negative margin to cover any gap */}
-      <div style={{ background: 'white', marginTop: '-12px', zIndex: 2, position: 'relative' }}>
-        <PoemDisplay />
-      </div>
-
-      {/* Full-screen transition phrase */}
-      <section className="w-full h-screen flex justify-center items-center">
-        <span className="text-4xl md:text-6xl font-light italic text-black animate-fadeIn text-center px-4">
-          If we are here, now, can we face the numbers?
-        </span>
-      </section>
+      {/* Poem and overlay transition with chart content */}
+      <PoemToQuestionTransition>
+        <StorytellingSection />
+      </PoemToQuestionTransition>
 
       {/* Hero section with video and poem overlay */}
       {/* <HeroOverlay /> */}
 
       {/* Content container for Scatterplot and Add Story */}
       <div id="content-container" className="relative z-10 w-full items-center justify-center font-mono text-sm pb-96 mt-20">
-        {/* Storytelling and charts section */}
-        <StorytellingSection />
-
         {/* Transition to loss of stories/sound/memory */}
         <TransitionToLossSection />
 
