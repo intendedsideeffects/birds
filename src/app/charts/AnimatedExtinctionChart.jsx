@@ -380,6 +380,70 @@ export default function AnimatedExtinctionChart() {
 
   return (
     <div ref={chartContainerRef} style={{ width: "100vw", height: "100vh", position: "fixed", top: 0, left: 0, background: "#fff", zIndex: 0 }}>
+      {/* Title and subtitle */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 40,
+        zIndex: 10,
+        textAlign: 'left',
+        width: 'auto',
+        pointerEvents: 'none',
+        paddingTop: 16,
+      }}>
+        <h1 style={{
+          fontSize: 32,
+          fontWeight: 700,
+          margin: 0,
+          color: '#222',
+          letterSpacing: 0.5,
+          lineHeight: 1.2,
+        }}>
+          Bird Extinctions Are Accelerating. Rates Far Exceed What’s Natural.
+        </h1>
+        <div style={{
+          fontSize: 18,
+          fontWeight: 400,
+          marginTop: 8,
+          color: '#444',
+          lineHeight: 1.4,
+          maxWidth: 700,
+          marginLeft: 0,
+          marginRight: 0,
+        }}>
+          <div>
+            For millennia, bird extinctions matched the <span style={{color: '#A259D9', fontWeight: 600, opacity: 0.4}}>natural background rate (0.1–1.1 per 100 years)</span>. In recent centuries, human activity caused a dramatic surge.
+          </div>
+          <div style={{ height: 18 }}></div>
+          <div>
+            Use the slider to see how extinction rates have changed.
+          </div>
+        </div>
+      </div>
+      {/* Slider info sentence below subtitle, left-aligned, with vertical gap */}
+      {/* Slider row, right-aligned */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        maxWidth: 1200,
+        width: '100%',
+        margin: '18px auto 0 auto',
+        paddingLeft: 0,
+        paddingRight: 0,
+        zIndex: 15,
+        position: 'relative',
+        pointerEvents: 'auto',
+      }}>
+        <input
+          type="range"
+          min="0"
+          max={data.length}
+          value={barEndIndex}
+          onChange={handleSliderChange}
+          style={sliderStyle}
+        />
+      </div>
       {/* Custom slider styles */}
       <style>{`
         input[type="range"]::-webkit-slider-thumb {
@@ -400,29 +464,16 @@ export default function AnimatedExtinctionChart() {
           border: none;
         }
       `}</style>
-      
 
-      
-      {/* Minimalist slider at top */}
-      <div style={controlsStyle}>
-        <input
-          type="range"
-          min="0"
-          max={data.length}
-          value={barEndIndex}
-          onChange={handleSliderChange}
-          style={sliderStyle}
-        />
-      </div>
-
-      <div ref={chartAreaRef} style={{ width: "100%", height: "100%", position: "relative" }}>
+      {/* Chart area */}
+      <div ref={chartAreaRef} style={{ width: "100%", height: "calc(100% - 220px)", position: "relative", marginTop: 220 }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={
             (barEndIndex < data.length
               ? data.map((d, i) => ({ ...d, birds_falling: i < barEndIndex ? d.birds_falling : 0, index: i, dataLength: data.length }))
               : data.map((d, i) => ({ ...d, index: i, dataLength: data.length }))
             )
-          } margin={{ top: 40, right: 40, left: 40, bottom: 40 }}>
+          } margin={{ top: 100, right: 40, left: 40, bottom: 160 }}>
             {/* Light purple, half-transparent box for extinction rate range */}
             <rect
               x={0}
@@ -438,17 +489,17 @@ export default function AnimatedExtinctionChart() {
             <ReferenceArea
               y1={0.1}
               y2={1.1}
-              fill="#DDA0DD"
-              fillOpacity={0.3}
+              fill="#A259D9"
+              fillOpacity={0.2}
               ifOverflow="extendDomain"
             />
             <XAxis
               dataKey="year"
               type="number"
-              domain={["dataMin", 2200]}
+              domain={[-5000, 2200]}
               tickFormatter={y => (y % 1000 === 0 ? y.toString() : '')}
               stroke="#000"
-              tick={{ fill: "#000" }}
+              tick={{ fill: "#000", fontSize: 12 }}
               ticks={xTicks}
               axisLine={true}
               tickLine={true}
@@ -474,7 +525,7 @@ export default function AnimatedExtinctionChart() {
                 return value % 1 === 0 ? value.toFixed(0) : value.toFixed(1);
               }}
             >
-              <Label value="Extinctions" angle={-90} position="insideLeft" fill="#000" />
+              <Label value="Extinctions per 100 Years" angle={-90} position="insideLeft" fill="#000" />
             </YAxis>
             <Tooltip content={<CustomTooltip barEndIndex={barEndIndex} />} />
             <Bar
@@ -491,18 +542,7 @@ export default function AnimatedExtinctionChart() {
         </ResponsiveContainer>
         {/* Show the large text in the middle of the purple box, left aligned, shrink with slider */}
         {/* Large centered text in the purple box, always centered, fades out in place when the slider moves past year -4100 */}
-        {mounted && chartAreaRef.current && (
-          <div
-            style={{
-              ...boxLabelStyle,
-              opacity: barEndIndex < 10 ? 1 : 0,
-              pointerEvents: "none",
-              transition: "opacity 0.7s"
-            }}
-          >
-            A normal background extinction rate is between 0.1 and 1.1 extinctions every 100 years.
-          </div>
-        )}
+        {/* (REMOVED large purple phrase as requested) */}
       </div>
     </div>
   );
