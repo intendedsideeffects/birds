@@ -93,6 +93,8 @@ export default function BirdExtinctionBubbleChart() {
   const visibleTooltipsRef = useRef([]);
   const lastMousePos = useRef({ x: 0, y: 0 });
   const [fadingTooltips, setFadingTooltips] = useState(new Set());
+  const [lastMoveTime, setLastMoveTime] = useState(Date.now());
+  const [lastNear, setLastNear] = useState([]);
   useEffect(() => { visibleTooltipsRef.current = visibleTooltips; }, [visibleTooltips]);
 
   // Responsive container size
@@ -159,6 +161,7 @@ export default function BirdExtinctionBubbleChart() {
   useEffect(() => {
     const container = containerRef.current;
     if (!container || !frozen || !homes.length) return;
+    let stationaryCheck = null;
     function handleMouseMove(e) {
       const rect = container.getBoundingClientRect();
       const mx = e.clientX - rect.left;
@@ -169,8 +172,9 @@ export default function BirdExtinctionBubbleChart() {
       if (mouseDelta < 8) return;
       
       lastMousePos.current = { x: mx, y: my };
+      setLastMoveTime(Date.now());
       
-      // Find all bubbles within 40px of mouse (increased from 25px)
+      // Find all bubbles within 40px of mouse
       const near = nodes
         .map((node, i) => ({
           i,
@@ -181,13 +185,14 @@ export default function BirdExtinctionBubbleChart() {
         .slice(0, 4) // Only keep the 4 closest
         .map(({ i }) => i);
       setHoveredIndices(near);
+      setLastNear(near);
       // Set tooltips visible for all near indices
       setVisibleTooltips((prev) => {
         const newSet = new Set(prev);
         near.forEach(idx => newSet.add(idx));
         return Array.from(newSet);
       });
-      // For indices not near, start a timer to hide after 0.5s
+      // For indices not near, start a timer to hide after 3s
       const currentVisible = visibleTooltipsRef.current;
       currentVisible.forEach(idx => {
         if (!near.includes(idx)) {
@@ -230,14 +235,34 @@ export default function BirdExtinctionBubbleChart() {
       }));
     }
     container.addEventListener("mousemove", handleMouseMove);
+    // Stationary mouse check: keep tooltips visible if mouse is still and near bubbles
+    stationaryCheck = setInterval(() => {
+      const now = Date.now();
+      // If mouse hasn't moved for 100ms and is still near bubbles, keep tooltips visible
+      if (now - lastMoveTime > 100 && lastNear.length > 0) {
+        setVisibleTooltips((prev) => {
+          const newSet = new Set(prev);
+          lastNear.forEach(idx => newSet.add(idx));
+          return Array.from(newSet);
+        });
+        // Cancel fade-out timers for these tooltips
+        lastNear.forEach(idx => {
+          if (tooltipTimers.current[idx]) {
+            clearTimeout(tooltipTimers.current[idx]);
+            delete tooltipTimers.current[idx];
+          }
+        });
+      }
+    }, 100);
     return () => {
       container.removeEventListener("mousemove", handleMouseMove);
-      // On unmount, clear all timers and hide all tooltips after 0.5s
+      if (stationaryCheck) clearInterval(stationaryCheck);
+      // On unmount, clear all timers and hide all tooltips after 3s
       Object.values(tooltipTimers.current).forEach(clearTimeout);
       tooltipTimers.current = {};
       setTimeout(() => setVisibleTooltips([]), 3000);
     };
-  }, [frozen, homes, nodes]);
+  }, [frozen, homes, nodes, lastMoveTime, lastNear]);
 
   return (
     <div style={{ padding: 20, textAlign: "center" }}>
@@ -274,7 +299,7 @@ export default function BirdExtinctionBubbleChart() {
           marginRight: 0,
         }}>
           <div>
-            Since 5000 BCE, 1,298 bird species have gone extinct. 90% were caused by <span style={{color:'black',fontWeight:'bold'}}>human activity</span> and are shown in <span style={{color:'black',fontWeight:'bold'}}>black</span>. The rest, due to natural causes, appear in <span style={{color:'#bfa6d8',fontWeight:'bold'}}>purple</span>.
+            Since 5000 BCE, 1298 bird species have gone extinct. 90% were caused by <span style={{color:'black',fontWeight:'bold'}}>human activity</span> and are shown in <span style={{color:'black',fontWeight:'bold'}}>black</span>. The rest, due to natural causes, appear in <span style={{color:'#bfa6d8',fontWeight:'bold'}}>purple</span>.
           </div>
           <div style={{ marginTop: 12, fontSize: 16, color: '#444' }}>
             Move your mouse to explore.
