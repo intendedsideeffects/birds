@@ -349,7 +349,7 @@ export default function AnimatedExtinctionChart() {
   // Slider and controls style
   const controlsStyle = {
     position: "absolute",
-    top: 'calc(138px + 0.6cm)', // moved slider up by 1mm
+    top: 'calc(138px + 1.1cm)', // moved slider down by 0.5cm
     left: "50%",
     transform: "translateX(-50%)",
     zIndex: 20,
@@ -399,7 +399,7 @@ export default function AnimatedExtinctionChart() {
           letterSpacing: 0.5,
           lineHeight: 1.2,
         }}>
-          Bird Extinctions Are Accelerating. Rates Far Exceed What’s Natural.
+          Bird Extinction Rates Far Exceed What's Natural.
         </h1>
         <div style={{
           fontSize: 18,
@@ -415,22 +415,38 @@ export default function AnimatedExtinctionChart() {
             For millennia, bird extinctions matched the <span style={{color: '#A259D9', fontWeight: 600, opacity: 0.4}}>natural background rate (0.1–1.1 per 100 years)</span>. In recent centuries, human activity caused a dramatic surge.
           </div>
           <div style={{ height: 38 }}></div> {/* Increased vertical gap from 18px to 38px */}
-          <div>
-            Use the slider to see how extinction rates have changed.
-          </div>
         </div>
       </div>
       {/* Slider info sentence below subtitle, left-aligned, with vertical gap */}
       {/* Slider row, right-aligned */}
-      <div style={controlsStyle}>
+      <div style={{
+        ...controlsStyle,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 12,
+        minWidth: "300px"
+      }}>
         <input
           type="range"
           min="0"
           max={data.length}
           value={barEndIndex}
           onChange={handleSliderChange}
-          style={sliderStyle}
+          style={{
+            ...sliderStyle,
+            marginTop: '0.5cm',
+          }}
         />
+        <div style={{
+          marginTop: '-0.2cm',
+          fontSize: 15,
+          color: '#444',
+          opacity: 0.6,
+          textAlign: 'center',
+        }}>
+          Move the slider to see the change.
+        </div>
       </div>
       {/* Custom slider styles */}
       <style>{`
