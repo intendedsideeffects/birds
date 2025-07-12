@@ -51,6 +51,10 @@ export default function AnimatedExtinctionChart() {
   const [maxY, setMaxY] = useState(1); // max y for axis, only increases
   const [isManualControl, setIsManualControl] = useState(true); // Start in manual control mode
   const intervalRef = useRef(null);
+  const chartContainerRef = useRef(null);
+  const chartAreaRef = useRef(null);
+  const [labelStyle, setLabelStyle] = useState({ top: 0, left: 0 });
+  const LABEL_OFFSET = 48; // px above the line (ensures text is well above the line)
 
   // Load and preprocess data
   useEffect(() => {
@@ -93,7 +97,28 @@ export default function AnimatedExtinctionChart() {
     opacity: index < barEndIndex ? 0.8 : 0 // Hide bars beyond current position
   }));
 
-
+  // Calculate label position whenever maxY or chart size changes
+  useEffect(() => {
+    if (!chartAreaRef.current) return;
+    const chartRect = chartAreaRef.current.getBoundingClientRect();
+    const chartHeight = chartRect.height;
+    // The chart has a 40px top margin and 40px bottom margin
+    const chartInnerHeight = chartHeight - 40 - 40;
+    // Calculate the Y position of the background line in pixels (relative to chart area)
+    // The line should always be at: 40 + chartInnerHeight * (1 - BACKGROUND_RATE / maxY)
+    // The label should always be 48px above that, regardless of scaling
+    const lineY = 40 + chartInnerHeight * (1 - BACKGROUND_RATE / maxY);
+    const labelY = Math.max(0, lineY - 48); // Prevent going above the chart
+    setLabelStyle({
+      position: "absolute",
+      left: 128,
+      top: labelY,
+      color: "#DDA0DD",
+      fontSize: 16,
+      fontWeight: 500,
+      pointerEvents: "none"
+    });
+  }, [maxY, chartAreaRef.current]);
 
   // Slider and controls style
   const controlsStyle = {
@@ -122,7 +147,7 @@ export default function AnimatedExtinctionChart() {
   const fixedYMin = 0.3; // never let y-axis go below this
 
   return (
-    <div style={{ width: "100vw", height: "100vh", position: "fixed", top: 0, left: 0, background: "#fff", zIndex: 0 }}>
+    <div ref={chartContainerRef} style={{ width: "100vw", height: "100vh", position: "fixed", top: 0, left: 0, background: "#fff", zIndex: 0 }}>
       {/* Custom slider styles */}
       <style>{`
         input[type="range"]::-webkit-slider-thumb {
@@ -158,37 +183,29 @@ export default function AnimatedExtinctionChart() {
         />
       </div>
 
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={animatedBar} margin={{ top: 40, right: 40, left: 40, bottom: 40 }}>
-          <XAxis dataKey="year" type="number" domain={["dataMin", 2200]} tickFormatter={y => y.toString()} stroke="#000" tick={{ fill: "#000" }}>
-            <Label value="Year (25-year bins)" offset={-10} position="insideBottom" fill="#000" />
-          </XAxis>
-          <YAxis domain={[0, maxY]} stroke="#000" tick={{ fill: "#000" }}>
-            <Label value="Extinctions" angle={-90} position="insideLeft" fill="#000" />
-          </YAxis>
-          <Tooltip />
-          <Bar dataKey="birds_falling" isAnimationActive={false} fill="#000">
-            {animatedBar.map((entry, index) => (
-              <cell key={`cell-${index}`} fill={entry.fill} opacity={entry.opacity} />
-            ))}
-          </Bar>
-          {/* Overlay background extinction rate line */}
-          <ReferenceLine y={BACKGROUND_RATE} stroke="#DDA0DD" strokeDasharray="4 4" strokeWidth={3} />
-        </BarChart>
-      </ResponsiveContainer>
-      {/* Small purple text for background extinction rate */}
-      <div style={{
-        position: "absolute",
-        left: 128,
-        top: `calc(40px + ${(1 - BACKGROUND_RATE / maxY) * 100}% - 76px)`, // 2cm above the line
-        color: "#DDA0DD",
-        fontSize: 16,
-        fontWeight: 500,
-        pointerEvents: "none",
-        background: "#fff",
-        padding: "0 4px"
-      }}>
-        This is the normal background extinction rate: 0.25 extinctions per 100 years
+      <div ref={chartAreaRef} style={{ width: "100%", height: "100%", position: "relative" }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={animatedBar} margin={{ top: 40, right: 40, left: 40, bottom: 40 }}>
+            <XAxis dataKey="year" type="number" domain={["dataMin", 2200]} tickFormatter={y => y.toString()} stroke="#000" tick={{ fill: "#000" }}>
+              <Label value="Year (25-year bins)" offset={-10} position="insideBottom" fill="#000" />
+            </XAxis>
+            <YAxis domain={[0, maxY]} stroke="#000" tick={{ fill: "#000" }}>
+              <Label value="Extinctions" angle={-90} position="insideLeft" fill="#000" />
+            </YAxis>
+            <Tooltip />
+            <Bar dataKey="birds_falling" isAnimationActive={false} fill="#000">
+              {animatedBar.map((entry, index) => (
+                <cell key={`cell-${index}`} fill={entry.fill} opacity={entry.opacity} />
+              ))}
+            </Bar>
+            {/* Overlay background extinction rate line */}
+            <ReferenceLine y={BACKGROUND_RATE} stroke="#DDA0DD" strokeDasharray="4 4" strokeWidth={3} />
+          </BarChart>
+        </ResponsiveContainer>
+        {/* Small purple text for background extinction rate */}
+        <div style={labelStyle}>
+          A normal background extinction rate is 1 species every 400 years. Or 0.25 species every 100 years.
+        </div>
       </div>
     </div>
   );
