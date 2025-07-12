@@ -77,6 +77,7 @@ function StackedBarShape(props) {
         width={width}
         height={segmentHeight - 0.5}
         fill={fill}
+        opacity={0.8}
         stroke={separatorColor}
         strokeWidth={1}
       />
@@ -184,12 +185,13 @@ function CustomTooltip({ active, payload, label, barEndIndex }) {
       fontSize: 15,
       lineHeight: 1.5,
       color: isPrognosis ? '#000' : '#222',
-      minWidth: 180
+      minWidth: 180,
+      opacity: 0.9
     }}>
       <div><strong>Year:</strong> {year}</div>
       <div><strong>Extinctions:</strong> {birds_falling}</div>
       {showRate && (
-        <div style={{marginTop: 8, color: isPrognosis ? '#000' : '#000'}}>
+        <div style={{marginTop: 8, color: isPrognosis ? '#000' : '#000', opacity: 0.9}}>
           {isPrognosis
             ? <>The extinction rate is projected to be <strong>~{x}×</strong> higher than the natural background rate.</>
             : <>The extinction rate is <strong>~{x}×</strong> higher than the natural background rate.</>
