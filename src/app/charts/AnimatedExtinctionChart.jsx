@@ -399,7 +399,7 @@ export default function AnimatedExtinctionChart() {
           letterSpacing: 0.5,
           lineHeight: 1.2,
         }}>
-          Bird Extinction Rates Far Exceed What's Natural.
+          Bird extinction rates far exceed what's natural.
         </h1>
         <div style={{
           fontSize: 18,
