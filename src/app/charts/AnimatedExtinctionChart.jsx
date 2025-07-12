@@ -16,24 +16,24 @@ const EXPLANATIONS = [
 
 function binData(rawData) {
   if (!rawData.length) return [];
-  const minYear = Math.floor(rawData[0].year / 25) * 25;
+  const minYear = Math.floor(rawData[0].year / 100) * 100;
   const splitYear = SPLIT_YEAR; // 2025
   const bins = [];
-  // Black bins: up to and including SPLIT_YEAR (25-year bins)
-  for (let y = minYear; y <= splitYear; y += 25) {
+  // Black bins: up to and including SPLIT_YEAR (100-year bins)
+  for (let y = minYear; y <= splitYear; y += 100) {
     bins.push({ year: y, birds_falling: 0 });
   }
-  // Yellow bins: 2026–2199 (25-year bins)
-  for (let y = 2050; y <= 2175; y += 25) {
+  // Yellow bins: 2026–2199 (100-year bins)
+  for (let y = 2100; y <= 2199; y += 100) {
     bins.push({ year: y, birds_falling: 0 });
   }
   rawData.forEach(d => {
     if (d.year <= splitYear) {
-      const binIdx = Math.floor((d.year - minYear) / 25);
+      const binIdx = Math.floor((d.year - minYear) / 100);
       bins[binIdx].birds_falling += d.birds_falling;
     } else if (d.year < 2200) {
-      // All years 2026–2199 go into 25-year yellow bins
-      const yellowBinIdx = Math.floor((d.year - 2025) / 25) + Math.floor((splitYear - minYear) / 25) + 1;
+      // All years 2026–2199 go into 100-year yellow bins
+      const yellowBinIdx = Math.floor((d.year - 2100) / 100) + Math.floor((splitYear - minYear) / 100) + 1;
       if (yellowBinIdx < bins.length) {
         bins[yellowBinIdx].birds_falling += d.birds_falling;
       }
@@ -218,7 +218,7 @@ export default function AnimatedExtinctionChart() {
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={animatedBar} margin={{ top: 40, right: 40, left: 40, bottom: 40 }}>
             <XAxis dataKey="year" type="number" domain={["dataMin", 2200]} tickFormatter={y => y.toString()} stroke="#000" tick={{ fill: "#000" }}>
-              <Label value="Year (25-year bins)" offset={-10} position="insideBottom" fill="#000" />
+              <Label value="Year (100-year bins)" offset={-10} position="insideBottom" fill="#000" />
             </XAxis>
             <YAxis domain={[0, maxY]} stroke="#000" tick={{ fill: "#000" }}>
               <Label value="Extinctions" angle={-90} position="insideLeft" fill="#000" />
