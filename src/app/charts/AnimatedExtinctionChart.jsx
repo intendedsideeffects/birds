@@ -348,8 +348,8 @@ export default function AnimatedExtinctionChart() {
 
   // Slider and controls style
   const controlsStyle = {
-    position: "fixed",
-    top: "5cm",
+    position: "absolute",
+    top: 138, // aligns with the slider sentence (subtitle + gap)
     left: "50%",
     transform: "translateX(-50%)",
     zIndex: 20,
@@ -414,7 +414,7 @@ export default function AnimatedExtinctionChart() {
           <div>
             For millennia, bird extinctions matched the <span style={{color: '#A259D9', fontWeight: 600, opacity: 0.4}}>natural background rate (0.1–1.1 per 100 years)</span>. In recent centuries, human activity caused a dramatic surge.
           </div>
-          <div style={{ height: 18 }}></div>
+          <div style={{ height: 38 }}></div> {/* Increased vertical gap from 18px to 38px */}
           <div>
             Use the slider to see how extinction rates have changed.
           </div>
@@ -454,7 +454,7 @@ export default function AnimatedExtinctionChart() {
       `}</style>
 
       {/* Chart area */}
-      <div ref={chartAreaRef} style={{ width: "100%", height: "calc(100% - 220px)", position: "relative", marginTop: 220 }}>
+      <div ref={chartAreaRef} style={{ width: "100%", height: "calc(100% - 110px)", position: "relative", marginTop: 'calc(110px + 2cm)' }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={
             (barEndIndex < data.length
