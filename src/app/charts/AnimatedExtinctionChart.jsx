@@ -349,7 +349,7 @@ export default function AnimatedExtinctionChart() {
   // Slider and controls style
   const controlsStyle = {
     position: "absolute",
-    top: 138, // aligns with the slider sentence (subtitle + gap)
+    top: 'calc(138px + 0.6cm)', // moved slider up by 1mm
     left: "50%",
     transform: "translateX(-50%)",
     zIndex: 20,
