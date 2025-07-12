@@ -94,19 +94,28 @@ function getNiceYMax(max) {
   return Math.ceil(max / 10) * 10;
 }
 
-// Helper to get nice Y-axis ticks
-function getNiceYTicks(max) {
-  const niceMax = getNiceYMax(max);
-  let step = 1;
-  if (niceMax <= 10) step = 1;
-  else if (niceMax <= 50) step = 5;
-  else if (niceMax <= 200) step = 10;
-  else step = 100;
-  const ticks = [];
-  for (let v = 0; v <= niceMax; v += step) {
-    ticks.push(v);
+// Robust Y-axis tick generator: always round, even ticks
+function getRobustYTicks(max) {
+  if (max <= 2) {
+    return [0, 0.5, 1, 1.5, 2];
   }
-  if (ticks[ticks.length - 1] !== niceMax) ticks.push(niceMax);
+  if (max <= 10) {
+    const step = 1;
+    const upper = Math.ceil(max);
+    const ticks = [];
+    for (let v = 0; v <= upper; v += step) ticks.push(v);
+    if (ticks[ticks.length - 1] < upper) ticks.push(upper);
+    return ticks;
+  }
+  // For larger values, use powers of 10 or 5*10^n
+  const pow10 = Math.pow(10, Math.floor(Math.log10(max)));
+  let step = pow10;
+  if (max / step < 2) step = step / 5; // e.g. 2000 max, step 500
+  else if (max / step < 5) step = step / 2; // e.g. 300 max, step 50
+  const upper = Math.ceil(max / step) * step;
+  const ticks = [];
+  for (let v = 0; v <= upper; v += step) ticks.push(v);
+  if (ticks[ticks.length - 1] < upper) ticks.push(upper);
   return ticks;
 }
 
@@ -413,26 +422,19 @@ export default function AnimatedExtinctionChart() {
             <YAxis
               domain={() => {
                 const maxBar = Math.max(0, ...data.slice(0, barEndIndex).map(d => d.birds_falling));
-                if (maxBar <= 1) return [0, 1.5];
-                return [0, maxBar * 1.1];
+                const ticks = getRobustYTicks(maxBar);
+                const maxTick = ticks[ticks.length - 1];
+                return [0, maxTick];
               }}
               stroke="#000"
               tick={{ fill: "#000" }}
               ticks={() => {
                 const maxBar = Math.max(0, ...data.slice(0, barEndIndex).map(d => d.birds_falling));
-                const yMax = maxBar <= 1 ? 1.5 : maxBar * 1.1;
-                return getSimpleYTicks(yMax);
+                return getRobustYTicks(maxBar);
               }}
               tickFormatter={value => {
-                // Find the current maxBar for this render
-                const maxBar = Math.max(0, ...data.slice(0, barEndIndex).map(d => d.birds_falling));
-                const yMax = maxBar <= 1 ? 1.5 : maxBar * 1.1;
-                if (yMax > 2) {
-                  return Math.round(value);
-                } else {
-                  // Show up to one decimal if needed
-                  return value % 1 === 0 ? value.toFixed(0) : value.toFixed(1);
-                }
+                if (value >= 10) return Math.round(value);
+                return value % 1 === 0 ? value.toFixed(0) : value.toFixed(1);
               }}
             >
               <Label value="Extinctions" angle={-90} position="insideLeft" fill="#000" />
