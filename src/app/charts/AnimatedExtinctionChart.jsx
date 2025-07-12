@@ -43,6 +43,48 @@ function binData(rawData) {
   return bins;
 }
 
+// Helper to transform binned data for stacked bars
+function transformForStackedBars(binned, barEndIndex) {
+  // Find the max extinctions in any bin (for number of stacks)
+  const maxExtinctions = Math.max(0, ...binned.map((d, i) => (i < barEndIndex ? d.birds_falling : 0)));
+  // For each bin, create keys e0, e1, ..., eN for each extinction
+  return binned.map((bin, i) => {
+    const obj = { year: bin.year };
+    for (let j = 0; j < (i < barEndIndex ? bin.birds_falling : 0); j++) {
+      obj[`e${j}`] = 1;
+    }
+    return obj;
+  });
+}
+
+// Custom shape for stacked bar segments
+function StackedBarShape(props) {
+  const { x, y, width, height, payload, fill } = props;
+  const extinctions = Object.hasOwn(payload, 'birds_falling') ? payload.birds_falling : 0;
+  if (!extinctions || height === 0) return null;
+  const segmentHeight = height / extinctions;
+  const segments = [];
+  // Use 40% opacity version of fill color for the separator
+  let separatorColor = fill === MUSTARD
+    ? 'rgba(255, 214, 0, 0.4)'
+    : 'rgba(0, 0, 0, 0.4)';
+  for (let i = 0; i < extinctions; i++) {
+    segments.push(
+      <rect
+        key={i}
+        x={x}
+        y={y + i * segmentHeight}
+        width={width}
+        height={segmentHeight - 0.5}
+        fill={fill}
+        stroke={separatorColor}
+        strokeWidth={1}
+      />
+    );
+  }
+  return <g>{segments}</g>;
+}
+
 export default function AnimatedExtinctionChart() {
   const [data, setData] = useState([]);
   const [barEndIndex, setBarEndIndex] = useState(0);
@@ -90,14 +132,9 @@ export default function AnimatedExtinctionChart() {
     setMaxY(localMax); // Always set to current max, allowing decrease
   };
 
-  // Prepare chart data for current animation
-  // Show all bars but with opacity based on whether they should be visible
-  const animatedBar = data.map((d, index) => ({
-    year: d.year,
-    birds_falling: index < barEndIndex ? d.birds_falling : 0, // Set to 0 if beyond current position
-    fill: d.year > 2025 ? MUSTARD : "#000", // All bars after 2025 are mustard yellow
-    opacity: index < barEndIndex ? 0.8 : 0 // Hide bars beyond current position
-  }));
+  // Prepare chart data for current animation (stacked)
+  const maxExtinctions = Math.max(0, ...data.map((d, i) => (i < barEndIndex ? d.birds_falling : 0)));
+  const stackedData = transformForStackedBars(data, barEndIndex);
 
   // Calculate label position whenever maxY or chart size changes
   useEffect(() => {
@@ -216,7 +253,11 @@ export default function AnimatedExtinctionChart() {
 
       <div ref={chartAreaRef} style={{ width: "100%", height: "100%", position: "relative" }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={animatedBar} margin={{ top: 40, right: 40, left: 40, bottom: 40 }}>
+          <BarChart data={
+            barEndIndex < data.length
+              ? data.map((d, i) => (i < barEndIndex ? d : { ...d, birds_falling: 0 }))
+              : data // Show all bars at the end
+          } margin={{ top: 40, right: 40, left: 40, bottom: 40 }}>
             <XAxis dataKey="year" type="number" domain={["dataMin", 2200]} tickFormatter={y => y.toString()} stroke="#000" tick={{ fill: "#000" }}>
               <Label value="Year (100-year bins)" offset={-10} position="insideBottom" fill="#000" />
             </XAxis>
@@ -224,11 +265,16 @@ export default function AnimatedExtinctionChart() {
               <Label value="Extinctions" angle={-90} position="insideLeft" fill="#000" />
             </YAxis>
             <Tooltip />
-            <Bar dataKey="birds_falling" isAnimationActive={false} fill="#000">
-              {animatedBar.map((entry, index) => (
-                <cell key={`cell-${index}`} fill={entry.fill} opacity={entry.opacity} />
-              ))}
-            </Bar>
+            <Bar
+              dataKey="birds_falling"
+              isAnimationActive={false}
+              opacity={0.8}
+              shape={props => {
+                // Use yellow for bars after 2025, black before
+                const fill = props && props.payload && props.payload.year > 2025 ? MUSTARD : "#000";
+                return <StackedBarShape {...props} fill={fill} />;
+              }}
+            />
             {/* Overlay background extinction rate line */}
             <ReferenceLine y={BACKGROUND_RATE} stroke="#DDA0DD" strokeDasharray="4 4" strokeWidth={3} />
           </BarChart>
