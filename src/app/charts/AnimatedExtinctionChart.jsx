@@ -378,6 +378,64 @@ export default function AnimatedExtinctionChart() {
     xTicks.push(y);
   }
 
+  // Annotation config
+  const annotations = [
+    { year: -1300, label: "Human settlement of islands" },
+    { year: 1300, label: "European Colonization" },
+    { year: 2000, label: "Human-driven habitat destruction" },
+  ];
+  const minYear = -5000;
+  const maxYear = 2200;
+  const chartMarginLeft = 40; // matches BarChart left margin
+  const chartMarginRight = 40; // matches BarChart right margin
+
+  // Helper to get annotation visibility and position (now inside component)
+  const getAnnotationPos = (annotationYear) => {
+    if (!chartAreaRef.current || !data.length) return { x: 0, y: 0, barHeight: 0 };
+    const chartRect = chartAreaRef.current.getBoundingClientRect();
+    const chartWidth = chartRect.width;
+    const chartHeight = chartRect.height;
+    const marginTop = 100; // matches BarChart top margin
+    const marginBottom = 160; // matches BarChart bottom margin
+    const innerWidth = chartWidth - chartMarginLeft - chartMarginRight;
+    const innerHeight = chartHeight - marginTop - marginBottom;
+    // Find which bin this annotation year falls into
+    const binIdx = data.findIndex(d => {
+      // Each bin represents a 100-year period starting at d.year
+      return annotationYear >= d.year && annotationYear < d.year + 100;
+    });
+    if (binIdx === -1) return { x: 0, y: 0, barHeight: 0 };
+    const bin = data[binIdx];
+    // Calculate x position for the CENTER of the bin/bar
+    const binStartYear = bin.year;
+    const binCenterYear = binStartYear + 50; // Center of 100-year bin
+    const t = (binCenterYear - minYear) / (maxYear - minYear);
+    const x = chartMarginLeft + t * innerWidth;
+    // Find the bar's height for this bin (if visible)
+    const bar = binIdx < barEndIndex ? bin : null;
+    const maxBar = Math.max(0, ...data.slice(0, barEndIndex).map(d => d.birds_falling));
+    const barHeight = bar && maxBar > 0 ? (bar.birds_falling / maxBar) * innerHeight : 0;
+    // y: top of the bar (or x axis if bar is 0)
+    const y = marginTop + innerHeight - (isNaN(barHeight) ? 0 : barHeight);
+    return { x, y, barHeight };
+  };
+
+  // Format annotation label: two lines, capitalize only the first word
+  function formatLabel(label) {
+    // Split into two roughly equal lines by word count
+    const words = label.split(' ');
+    const mid = Math.ceil(words.length / 2);
+    const firstLine = words.slice(0, mid).join(' ');
+    const secondLine = words.slice(mid).join(' ');
+    // Capitalize only the first word of the label
+    const capFirst = (str) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    return (
+      <>
+        {capFirst(firstLine)}<br />{secondLine.toLowerCase()}
+      </>
+    );
+  }
+
   return (
     <div ref={chartContainerRef} style={{ width: "100vw", height: "100vh", position: "fixed", top: 0, left: 0, background: "#fff", zIndex: 0 }}>
       {/* Title and subtitle */}
@@ -471,6 +529,7 @@ export default function AnimatedExtinctionChart() {
 
       {/* Chart area */}
       <div ref={chartAreaRef} style={{ width: "100%", height: "calc(100% - 110px)", position: "relative", marginTop: 'calc(110px + 2cm)' }}>
+        {/* Annotations: Human settlement of islands, European Colonization, Human-driven habitat destruction */}
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={
             (barEndIndex < data.length
@@ -544,6 +603,79 @@ export default function AnimatedExtinctionChart() {
             />
           </BarChart>
         </ResponsiveContainer>
+        {annotations.map(({ year, label }, idx) => {
+          const show = barEndIndex > data.findIndex(d => d.year >= year);
+          if (!show) return null;
+          const annotationPos = getAnnotationPos(year);
+          const barTopY = annotationPos.y;
+          const marginTop = 100; // matches BarChart top margin
+          const chartTop = marginTop + 10;
+          const fixedOffset = 72;
+          // Place text above the bar, with a gap to avoid overlap with the line
+          const textLineGap = 32; // px gap between text and line end (increased for more space)
+          let textTop = barTopY - fixedOffset - textLineGap;
+          if (idx === 1) textTop -= 25; // Move second annotation 25px further up
+          if (idx === 0) textTop -= 25; // Move first annotation 25px further up
+          if (idx === 0 || idx === 1 || idx === 2) textTop -= 40; // Move all three annotation texts 40px further up
+          textTop += 30; // Move all annotation texts 30px down
+          if (textTop < chartTop) textTop = chartTop;
+          // Calculate bar width in pixels for relative offset
+          let barWidth = 0;
+          if (chartAreaRef.current && data.length > 0) {
+            const chartRect = chartAreaRef.current.getBoundingClientRect();
+            const chartWidth = chartRect.width;
+            const chartMarginLeft = 40;
+            const chartMarginRight = 40;
+            const innerWidth = chartWidth - chartMarginLeft - chartMarginRight;
+            const barCount = data.length;
+            barWidth = innerWidth / barCount;
+          }
+          // Offset the first annotation (idx === 0) by -0.35 * barWidth, the second (idx === 1) by -0.22 * barWidth, the third (idx === 2) by -0.48 * barWidth, 0 for others
+          const xOffset = idx === 0 ? -0.35 * barWidth : (idx === 1 ? -0.22 * barWidth : (idx === 2 ? -0.48 * barWidth : 0));
+          const textLeft = annotationPos.x + xOffset;
+          // The line should start 7px above the bar top and end just below the text
+          let lineStartY = barTopY - 7 + 40; // Make the line 40px shorter by moving the start down
+          if (idx === 1) lineStartY -= 25; // Move second annotation's line start 25px further up
+          if (idx === 0) lineStartY -= 25; // Move first annotation's line start 25px further up
+          const lineEndY = textTop + 22; // 22px is approx text height
+          // Calculate and log bar width in pixels
+          if (chartAreaRef.current && data.length > 0) {
+            const chartRect = chartAreaRef.current.getBoundingClientRect();
+            const chartWidth = chartRect.width;
+            const chartMarginLeft = 40;
+            const chartMarginRight = 40;
+            const innerWidth = chartWidth - chartMarginLeft - chartMarginRight;
+            const barCount = data.length;
+            barWidth = innerWidth / barCount;
+            console.log('Bar width (px):', barWidth);
+          }
+          return (
+            <React.Fragment key={year}>
+              {/* Annotation text above the bar */}
+              <div
+                style={{
+                  position: 'absolute',
+                  left: textLeft,
+                  top: textTop,
+                  transform: 'translateX(-50%)',
+                  pointerEvents: 'none',
+                  zIndex: 10,
+                  fontSize: 15,
+                  fontWeight: 400,
+                  color: '#111',
+                  background: 'none',
+                  padding: 0,
+                  marginBottom: 0,
+                  boxShadow: 'none',
+                  whiteSpace: 'nowrap',
+                  textAlign: 'center',
+                }}
+              >
+                {formatLabel(label)}
+              </div>
+            </React.Fragment>
+          );
+        })}
         {/* Show the large text in the middle of the purple box, left aligned, shrink with slider */}
         {/* Large centered text in the purple box, always centered, fades out in place when the slider moves past year -4100 */}
         {/* (REMOVED large purple phrase as requested) */}
