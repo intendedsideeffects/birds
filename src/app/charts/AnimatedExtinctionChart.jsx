@@ -176,22 +176,22 @@ function CustomTooltip({ active, payload, label, barEndIndex }) {
   const isPrognosis = index === (dataLength - 1);
   return (
     <div style={{
-      background: 'white',
+      background: isPrognosis ? 'rgba(255,214,0,0.8)' : 'white',
       border: '1px solid #ccc',
       borderRadius: '10px',
       padding: '10px 16px',
       boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
       fontSize: 15,
       lineHeight: 1.5,
-      color: '#222',
+      color: isPrognosis ? '#000' : '#222',
       minWidth: 180
     }}>
       <div><strong>Year:</strong> {year}</div>
       <div><strong>Extinctions:</strong> {birds_falling}</div>
       {showRate && (
-        <div style={{marginTop: 8, color: '#000'}}>
+        <div style={{marginTop: 8, color: isPrognosis ? '#000' : '#000'}}>
           {isPrognosis
-            ? <>Prognosis: The extinction rate is projected to be <strong style={{color: '#B8860B'}}>~{x}×</strong> higher than the natural background rate.</>
+            ? <>The extinction rate is projected to be <strong>~{x}×</strong> higher than the natural background rate.</>
             : <>The extinction rate is <strong>~{x}×</strong> higher than the natural background rate.</>
           }
         </div>
