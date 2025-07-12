@@ -15,6 +15,17 @@ const tooltipStyles = `
       transform: translate(-50%, -100%) scale(1);
     }
   }
+  
+  @keyframes tooltipFadeOut {
+    from {
+      opacity: 1;
+      transform: translate(-50%, -100%) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: translate(-50%, -100%) scale(0.9);
+    }
+  }
 `;
 
 const TOTAL_BIRDS = 1298;
@@ -80,6 +91,8 @@ export default function BirdExtinctionBubbleChart() {
   const tooltipTimers = useRef({});
   const [visibleTooltips, setVisibleTooltips] = useState([]);
   const visibleTooltipsRef = useRef([]);
+  const lastMousePos = useRef({ x: 0, y: 0 });
+  const [fadingTooltips, setFadingTooltips] = useState(new Set());
   useEffect(() => { visibleTooltipsRef.current = visibleTooltips; }, [visibleTooltips]);
 
   // Responsive container size
@@ -150,13 +163,20 @@ export default function BirdExtinctionBubbleChart() {
       const rect = container.getBoundingClientRect();
       const mx = e.clientX - rect.left;
       const my = e.clientY - rect.top;
-      // Find all bubbles within 25px of mouse
+      
+      // Dead zone: only update if mouse moved more than 8px
+      const mouseDelta = Math.sqrt((mx - lastMousePos.current.x) ** 2 + (my - lastMousePos.current.y) ** 2);
+      if (mouseDelta < 8) return;
+      
+      lastMousePos.current = { x: mx, y: my };
+      
+      // Find all bubbles within 40px of mouse (increased from 25px)
       const near = nodes
         .map((node, i) => ({
           i,
           dist: Math.sqrt((node.x - mx) ** 2 + (node.y - my) ** 2),
         }))
-        .filter(({ dist }) => dist < 25)
+        .filter(({ dist }) => dist < 40)
         .sort((a, b) => a.dist - b.dist) // Sort by distance
         .slice(0, 4) // Only keep the 4 closest
         .map(({ i }) => i);
@@ -173,9 +193,17 @@ export default function BirdExtinctionBubbleChart() {
         if (!near.includes(idx)) {
           if (tooltipTimers.current[idx]) clearTimeout(tooltipTimers.current[idx]);
           tooltipTimers.current[idx] = setTimeout(() => {
-            setVisibleTooltips(current => current.filter(i => i !== idx));
+            setFadingTooltips(prev => new Set([...prev, idx]));
+            setTimeout(() => {
+              setVisibleTooltips(current => current.filter(i => i !== idx));
+              setFadingTooltips(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(idx);
+                return newSet;
+              });
+            }, 300); // Fade out duration
             delete tooltipTimers.current[idx];
-          }, 100);
+          }, 3000);
         } else if (tooltipTimers.current[idx]) {
           clearTimeout(tooltipTimers.current[idx]);
           delete tooltipTimers.current[idx];
@@ -207,7 +235,7 @@ export default function BirdExtinctionBubbleChart() {
       // On unmount, clear all timers and hide all tooltips after 0.5s
       Object.values(tooltipTimers.current).forEach(clearTimeout);
       tooltipTimers.current = {};
-      setTimeout(() => setVisibleTooltips([]), 100);
+      setTimeout(() => setVisibleTooltips([]), 3000);
     };
   }, [frozen, homes, nodes]);
 
@@ -296,13 +324,16 @@ export default function BirdExtinctionBubbleChart() {
                     background: "white",
                     padding: 0,
                     margin: 0,
-                    boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
-                    border: "1px solid black",
-                    borderRadius: "4px",
-                    padding: "4px 8px",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                    border: "none",
+                    borderRadius: "0px",
+                    padding: "6px 12px",
                     opacity: 1,
+                    background: "rgba(255,255,255,0.95)",
                     transition: "all 0.15s ease-out",
-                    animation: "tooltipFadeIn 0.15s ease-out",
+                    animation: fadingTooltips.has(idx) 
+                      ? "tooltipFadeOut 0.3s ease-out forwards"
+                      : "tooltipFadeIn 0.15s ease-out",
                   }}
                 >
                   {b.group === 'Other' ? 'Natural' : b.group}
