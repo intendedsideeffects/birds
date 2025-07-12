@@ -139,15 +139,15 @@ export default function AnimatedExtinctionChart() {
         zIndex: 100,
         pointerEvents: "none",
         opacity: 1,
-        transition: "opacity 1.5s cubic-bezier(.77,0,.18,1)"
+        transition: "opacity 2.5s cubic-bezier(.77,0,.18,1)"
       });
     } else {
       setCenterTextStyle(prev => ({
         ...prev,
         opacity: 0,
-        transition: "opacity 1.5s cubic-bezier(.77,0,.18,1)"
+        transition: "opacity 2.5s cubic-bezier(.77,0,.18,1)"
       }));
-      setTimeout(() => setShowCenterText(false), 1500);
+      setTimeout(() => setShowCenterText(false), 2500);
     }
   }, [barEndIndex, labelStyle.top, labelStyle.left]);
 
@@ -246,7 +246,7 @@ export default function AnimatedExtinctionChart() {
             zIndex: 100,
             pointerEvents: "none",
             opacity: barEndIndex === 0 ? 1 : 0,
-            transition: "opacity 1.5s cubic-bezier(.77,0,.18,1)"
+            transition: "opacity 2.5s cubic-bezier(.77,0,.18,1)"
           }}
         >
           A normal background extinction rate is 1 species every 400 years. Or 0.25 species every 100 years.
@@ -262,7 +262,7 @@ export default function AnimatedExtinctionChart() {
             zIndex: 100,
             pointerEvents: "none",
             opacity: barEndIndex > 0 ? 1 : 0,
-            transition: "opacity 1.5s cubic-bezier(.77,0,.18,1)"
+            transition: "opacity 2.5s cubic-bezier(.77,0,.18,1)"
           }}
         >
           normal extinction rate
