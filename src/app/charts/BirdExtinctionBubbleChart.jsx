@@ -299,7 +299,7 @@ export default function BirdExtinctionBubbleChart() {
           marginRight: 0,
         }}>
           <div>
-            Since 5000 BCE, 1298 bird species have gone extinct. 90% were caused by <span style={{color:'black',fontWeight:'bold'}}>human activity</span> and are shown in <span style={{color:'black',fontWeight:'bold'}}>black</span>. The rest, due to natural causes, appear in <span style={{color:'#bfa6d8',fontWeight:'bold'}}>purple</span>.
+            Since 5000 BCE, 1298 bird species have gone extinct. 90% were caused by <span style={{color:'black',fontWeight:'bold'}}>human activity</span>. The rest, due to <span style={{color:'rgba(128,0,128,0.4)',fontWeight:'bold'}}>natural causes</span>.
           </div>
           <div style={{ marginTop: 12, fontSize: 16, color: '#444' }}>
             Move your mouse to explore.
