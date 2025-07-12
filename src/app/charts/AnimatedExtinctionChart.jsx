@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Label, ReferenceLine } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Label, ReferenceLine, ReferenceArea } from "recharts";
 import * as d3 from "d3-fetch";
 
 const BACKGROUND_RATE = 0.25; // 1 species every 400 years
@@ -64,10 +64,10 @@ function StackedBarShape(props) {
   if (!extinctions || height === 0) return null;
   const segmentHeight = height / extinctions;
   const segments = [];
-  // Use 40% opacity version of fill color for the separator
+  // Use 20% opacity version of fill color for the separator
   let separatorColor = fill === MUSTARD
-    ? 'rgba(255, 214, 0, 0.4)'
-    : 'rgba(0, 0, 0, 0.4)';
+    ? 'rgba(255, 214, 0, 0.2)'
+    : 'rgba(0, 0, 0, 0.2)';
   for (let i = 0; i < extinctions; i++) {
     segments.push(
       <rect
@@ -85,7 +85,80 @@ function StackedBarShape(props) {
   return <g>{segments}</g>;
 }
 
+// Helper to get a nice rounded value above the max
+function getNiceYMax(max) {
+  if (max <= 5) return 5;
+  if (max <= 10) return 10;
+  if (max <= 20) return 20;
+  if (max <= 50) return 50;
+  return Math.ceil(max / 10) * 10;
+}
+
+// Helper to get nice Y-axis ticks
+function getNiceYTicks(max) {
+  const niceMax = getNiceYMax(max);
+  let step = 1;
+  if (niceMax <= 10) step = 1;
+  else if (niceMax <= 50) step = 5;
+  else if (niceMax <= 200) step = 10;
+  else step = 100;
+  const ticks = [];
+  for (let v = 0; v <= niceMax; v += step) {
+    ticks.push(v);
+  }
+  if (ticks[ticks.length - 1] !== niceMax) ticks.push(niceMax);
+  return ticks;
+}
+
+// Helper to get a simple step for Y-axis ticks
+function getSimpleStep(max) {
+  if (max <= 2) return 0.5;
+  if (max <= 5) return 1;
+  if (max <= 10) return 2;
+  if (max <= 20) return 5;
+  if (max <= 50) return 10;
+  if (max <= 100) return 20;
+  return 50;
+}
+
+function getSimpleYTicks(max) {
+  const step = getSimpleStep(max);
+  const ticks = [];
+  for (let v = 0; v <= max; v += step) {
+    ticks.push(Number(v.toFixed(2)));
+  }
+  if (ticks[ticks.length - 1] < max) ticks.push(Number(max.toFixed(2)));
+  return ticks;
+}
+
+// Custom X axis tick to render short/long ticks attached to axis using viewBox
+function CustomXAxisTick({ x, payload, viewBox }) {
+  const isMajor = payload.value % 1000 === 0;
+  const tickLength = isMajor ? 8 : 4;
+  // Use the axis baseline from viewBox
+  const axisY = viewBox ? viewBox.y + viewBox.height : 0;
+  return (
+    <g>
+      <line
+        x1={x}
+        x2={x}
+        y1={axisY - tickLength}
+        y2={axisY}
+        stroke="#000"
+        strokeWidth={1}
+        shapeRendering="crispEdges"
+      />
+      {isMajor && (
+        <text x={x} y={axisY + 16} textAnchor="middle" fill="#000" fontSize={12}>
+          {payload.value}
+        </text>
+      )}
+    </g>
+  );
+}
+
 export default function AnimatedExtinctionChart() {
+  const marginLeft = 160; // Define at the top so it's available everywhere
   const [data, setData] = useState([]);
   const [barEndIndex, setBarEndIndex] = useState(0);
   const [stage, setStage] = useState(0); // 0: background, 1: animated bars
@@ -99,6 +172,17 @@ export default function AnimatedExtinctionChart() {
   const LABEL_OFFSET = 48; // px above the line (ensures text is well above the line)
   const [showCenterText, setShowCenterText] = useState(true);
   const [centerTextStyle, setCenterTextStyle] = useState({});
+  const [showSmallText, setShowSmallText] = useState(false);
+  useEffect(() => {
+    if (barEndIndex === 0) {
+      setShowSmallText(false);
+    } else {
+      setShowSmallText(true);
+    }
+  }, [barEndIndex]);
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   // Load and preprocess data
   useEffect(() => {
@@ -136,28 +220,57 @@ export default function AnimatedExtinctionChart() {
   const maxExtinctions = Math.max(0, ...data.map((d, i) => (i < barEndIndex ? d.birds_falling : 0)));
   const stackedData = transformForStackedBars(data, barEndIndex);
 
-  // Calculate label position whenever maxY or chart size changes
+  // Calculate label position and size for the extinction rate box
+  const [boxLabelStyle, setBoxLabelStyle] = useState({});
   useEffect(() => {
     if (!chartAreaRef.current) return;
     const chartRect = chartAreaRef.current.getBoundingClientRect();
     const chartHeight = chartRect.height;
-    // The chart has a 40px top margin and 40px bottom margin
-    const chartInnerHeight = chartHeight - 40 - 40;
-    // Calculate the Y position of the background line in pixels (relative to chart area)
-    // The line should always be at: 40 + chartInnerHeight * (1 - BACKGROUND_RATE / maxY)
-    // The label should always be 48px above that, regardless of scaling
-    const lineY = 40 + chartInnerHeight * (1 - BACKGROUND_RATE / maxY);
-    const labelY = Math.max(0, lineY - 48); // Prevent going above the chart
-    setLabelStyle({
+    const chartWidth = chartRect.width;
+    // Chart margins
+    const marginTop = 40;
+    const marginBottom = 40;
+    const chartInnerHeight = chartHeight - marginTop - marginBottom;
+    const chartInnerWidth = chartWidth - marginLeft - 40;
+    // Y positions for the box (0.1 to 1.1 extinctions)
+    const y1 = marginTop + chartInnerHeight * (1 - 1.1 / maxY);
+    const y2 = marginTop + chartInnerHeight * (1 - 0.1 / maxY);
+    // Box height and width
+    const boxHeight = y2 - y1;
+    const boxWidth = chartInnerWidth;
+    // Font size: large at start, shrinks with slider, min 18px
+    const minFont = 18;
+    const maxFont = 36;
+    let fontSize, left, top, textAlign;
+    if (barEndIndex === 0) {
+      // Centered in the box
+      fontSize = maxFont;
+      left = marginLeft + boxWidth / 2;
+      top = y1 + boxHeight / 2 - maxFont / 2;
+      textAlign = "center";
+    } else {
+      // Above the box, left-aligned, small, sticks to top-left of box
+      fontSize = minFont;
+      left = marginLeft + 8;
+      top = y1 - fontSize - 8; // 8px above the box
+      textAlign = "left";
+    }
+    setBoxLabelStyle({
       position: "absolute",
-      left: 128,
-      top: labelY,
+      left: left,
+      top: top,
       color: "#DDA0DD",
-      fontSize: 16,
-      fontWeight: 500,
-      pointerEvents: "none"
+      fontSize: fontSize,
+      fontWeight: 400,
+      zIndex: 100,
+      pointerEvents: "none",
+      opacity: 1,
+      width: barEndIndex === 0 ? boxWidth : boxWidth / 2,
+      transform: barEndIndex === 0 ? "translateX(-50%)" : "none",
+      textAlign: textAlign,
+      transition: "font-size 0.5s, top 0.5s, left 0.5s, width 0.5s, transform 0.5s"
     });
-  }, [maxY, chartAreaRef.current]);
+  }, [barEndIndex, maxY, chartAreaRef.current]);
 
   // Offset for long and short text above the line
   const LONG_TEXT_OFFSET = 24;
@@ -214,6 +327,12 @@ export default function AnimatedExtinctionChart() {
   // Find max y for fixed axis in stage 0
   const fixedYMin = 0.3; // never let y-axis go below this
 
+  // Generate all bin ticks for the X axis
+  const xTicks = [];
+  for (let y = -5000; y <= 2200; y += 100) {
+    xTicks.push(y);
+  }
+
   return (
     <div ref={chartContainerRef} style={{ width: "100vw", height: "100vh", position: "fixed", top: 0, left: 0, background: "#fff", zIndex: 0 }}>
       {/* Custom slider styles */}
@@ -258,10 +377,64 @@ export default function AnimatedExtinctionChart() {
               ? data.map((d, i) => (i < barEndIndex ? d : { ...d, birds_falling: 0 }))
               : data // Show all bars at the end
           } margin={{ top: 40, right: 40, left: 40, bottom: 40 }}>
-            <XAxis dataKey="year" type="number" domain={["dataMin", 2200]} tickFormatter={y => y.toString()} stroke="#000" tick={{ fill: "#000" }}>
+            {/* Light purple, half-transparent box for extinction rate range */}
+            <rect
+              x={0}
+              y={null} // Will be set by a custom layer
+              width={"100%"}
+              height={null}
+              fill="#DDA0DD"
+              opacity={0.3}
+              pointerEvents="none"
+              style={{ zIndex: 1 }}
+            />
+            {/* Custom layer for the box using Recharts' <ReferenceArea> */}
+            <ReferenceArea
+              y1={0.1}
+              y2={1.1}
+              fill="#DDA0DD"
+              fillOpacity={0.3}
+              ifOverflow="extendDomain"
+            />
+            <XAxis
+              dataKey="year"
+              type="number"
+              domain={["dataMin", 2200]}
+              tickFormatter={y => (y % 1000 === 0 ? y.toString() : '')}
+              stroke="#000"
+              tick={{ fill: "#000" }}
+              ticks={xTicks}
+              axisLine={true}
+              tickLine={true}
+              height={40}
+            >
               <Label value="Year (100-year bins)" offset={-10} position="insideBottom" fill="#000" />
             </XAxis>
-            <YAxis domain={[0, maxY]} stroke="#000" tick={{ fill: "#000" }}>
+            <YAxis
+              domain={() => {
+                const maxBar = Math.max(0, ...data.slice(0, barEndIndex).map(d => d.birds_falling));
+                if (maxBar <= 1) return [0, 1.5];
+                return [0, maxBar * 1.1];
+              }}
+              stroke="#000"
+              tick={{ fill: "#000" }}
+              ticks={() => {
+                const maxBar = Math.max(0, ...data.slice(0, barEndIndex).map(d => d.birds_falling));
+                const yMax = maxBar <= 1 ? 1.5 : maxBar * 1.1;
+                return getSimpleYTicks(yMax);
+              }}
+              tickFormatter={value => {
+                // Find the current maxBar for this render
+                const maxBar = Math.max(0, ...data.slice(0, barEndIndex).map(d => d.birds_falling));
+                const yMax = maxBar <= 1 ? 1.5 : maxBar * 1.1;
+                if (yMax > 2) {
+                  return Math.round(value);
+                } else {
+                  // Show up to one decimal if needed
+                  return value % 1 === 0 ? value.toFixed(0) : value.toFixed(1);
+                }
+              }}
+            >
               <Label value="Extinctions" angle={-90} position="insideLeft" fill="#000" />
             </YAxis>
             <Tooltip />
@@ -275,44 +448,22 @@ export default function AnimatedExtinctionChart() {
                 return <StackedBarShape {...props} fill={fill} />;
               }}
             />
-            {/* Overlay background extinction rate line */}
-            <ReferenceLine y={BACKGROUND_RATE} stroke="#DDA0DD" strokeDasharray="4 4" strokeWidth={3} />
           </BarChart>
         </ResponsiveContainer>
-        {/* Show the long text above the line when barEndIndex == 0, otherwise show the short text with fade in/out */}
-        {/* Both texts always rendered, with independent opacity and offset */}
-        <div
-          style={{
-            position: "absolute",
-            top: labelStyle.top - LONG_TEXT_OFFSET,
-            left: labelStyle.left,
-            color: "#DDA0DD",
-            fontSize: 36,
-            fontWeight: 400,
-            zIndex: 100,
-            pointerEvents: "none",
-            opacity: barEndIndex === 0 ? 1 : 0,
-            transition: "opacity 2.5s cubic-bezier(.77,0,.18,1)"
-          }}
-        >
-          A normal background extinction rate is 1 species every 400 years. Or 0.25 species every 100 years.
-        </div>
-        <div
-          style={{
-            position: "absolute",
-            top: labelStyle.top - SHORT_TEXT_OFFSET,
-            left: labelStyle.left,
-            color: "#DDA0DD",
-            fontWeight: 400,
-            fontSize: 20,
-            zIndex: 100,
-            pointerEvents: "none",
-            opacity: barEndIndex > 0 ? 1 : 0,
-            transition: "opacity 2.5s cubic-bezier(.77,0,.18,1)"
-          }}
-        >
-          normal extinction rate
-        </div>
+        {/* Show the large text in the middle of the purple box, left aligned, shrink with slider */}
+        {/* Large centered text in the purple box, always centered, fades out in place when the slider moves past year -4100 */}
+        {mounted && chartAreaRef.current && (
+          <div
+            style={{
+              ...boxLabelStyle,
+              opacity: barEndIndex < 10 ? 1 : 0,
+              pointerEvents: "none",
+              transition: "opacity 0.7s"
+            }}
+          >
+            A normal background extinction rate is between 0.1 and 1.1 extinctions every 100 years.
+          </div>
+        )}
       </div>
     </div>
   );
