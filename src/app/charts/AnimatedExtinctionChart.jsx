@@ -349,7 +349,7 @@ export default function AnimatedExtinctionChart() {
   // Slider and controls style
   const controlsStyle = {
     position: "fixed",
-    top: 40,
+    top: "5cm",
     left: "50%",
     transform: "translateX(-50%)",
     zIndex: 20,
@@ -422,19 +422,7 @@ export default function AnimatedExtinctionChart() {
       </div>
       {/* Slider info sentence below subtitle, left-aligned, with vertical gap */}
       {/* Slider row, right-aligned */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        maxWidth: 1200,
-        width: '100%',
-        margin: '18px auto 0 auto',
-        paddingLeft: 0,
-        paddingRight: 0,
-        zIndex: 15,
-        position: 'relative',
-        pointerEvents: 'auto',
-      }}>
+      <div style={controlsStyle}>
         <input
           type="range"
           min="0"
