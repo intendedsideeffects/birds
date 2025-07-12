@@ -191,7 +191,7 @@ function CustomTooltip({ active, payload, label, barEndIndex }) {
       {showRate && (
         <div style={{marginTop: 8, color: '#000'}}>
           {isPrognosis
-            ? <>Prognosis: The extinction rate is projected to be <strong>~{x}×</strong> higher than the natural background rate.</>
+            ? <>Prognosis: The extinction rate is projected to be <strong style={{color: '#B8860B'}}>~{x}×</strong> higher than the natural background rate.</>
             : <>The extinction rate is <strong>~{x}×</strong> higher than the natural background rate.</>
           }
         </div>
