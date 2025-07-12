@@ -166,6 +166,40 @@ function CustomXAxisTick({ x, payload, viewBox }) {
   );
 }
 
+// Custom Tooltip for the chart
+function CustomTooltip({ active, payload, label, barEndIndex }) {
+  if (!active || !payload || !payload.length) return null;
+  const { year, birds_falling, index, dataLength } = payload[0].payload;
+  if (!birds_falling || index === undefined || typeof barEndIndex !== 'number' || index >= barEndIndex) return null;
+  const showRate = birds_falling > 1;
+  const x = (0.55 * birds_falling).toFixed(1);
+  const isPrognosis = index === (dataLength - 1);
+  return (
+    <div style={{
+      background: 'white',
+      border: '1px solid #ccc',
+      borderRadius: '10px',
+      padding: '10px 16px',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
+      fontSize: 15,
+      lineHeight: 1.5,
+      color: '#222',
+      minWidth: 180
+    }}>
+      <div><strong>Year:</strong> {year}</div>
+      <div><strong>Extinctions:</strong> {birds_falling}</div>
+      {showRate && (
+        <div style={{marginTop: 8, color: '#000'}}>
+          {isPrognosis
+            ? <>Prognosis: The extinction rate is projected to be <strong>~{x}×</strong> higher than the natural background rate.</>
+            : <>The extinction rate is <strong>~{x}×</strong> higher than the natural background rate.</>
+          }
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function AnimatedExtinctionChart() {
   const marginLeft = 160; // Define at the top so it's available everywhere
   const [data, setData] = useState([]);
@@ -382,9 +416,10 @@ export default function AnimatedExtinctionChart() {
       <div ref={chartAreaRef} style={{ width: "100%", height: "100%", position: "relative" }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={
-            barEndIndex < data.length
-              ? data.map((d, i) => (i < barEndIndex ? d : { ...d, birds_falling: 0 }))
-              : data // Show all bars at the end
+            (barEndIndex < data.length
+              ? data.map((d, i) => ({ ...d, birds_falling: i < barEndIndex ? d.birds_falling : 0, index: i, dataLength: data.length }))
+              : data.map((d, i) => ({ ...d, index: i, dataLength: data.length }))
+            )
           } margin={{ top: 40, right: 40, left: 40, bottom: 40 }}>
             {/* Light purple, half-transparent box for extinction rate range */}
             <rect
@@ -439,7 +474,7 @@ export default function AnimatedExtinctionChart() {
             >
               <Label value="Extinctions" angle={-90} position="insideLeft" fill="#000" />
             </YAxis>
-            <Tooltip />
+            <Tooltip content={<CustomTooltip barEndIndex={barEndIndex} />} />
             <Bar
               dataKey="birds_falling"
               isAnimationActive={false}
