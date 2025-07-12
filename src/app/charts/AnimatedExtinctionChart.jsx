@@ -55,6 +55,8 @@ export default function AnimatedExtinctionChart() {
   const chartAreaRef = useRef(null);
   const [labelStyle, setLabelStyle] = useState({ top: 0, left: 0 });
   const LABEL_OFFSET = 48; // px above the line (ensures text is well above the line)
+  const [showCenterText, setShowCenterText] = useState(true);
+  const [centerTextStyle, setCenterTextStyle] = useState({});
 
   // Load and preprocess data
   useEffect(() => {
@@ -119,6 +121,35 @@ export default function AnimatedExtinctionChart() {
       pointerEvents: "none"
     });
   }, [maxY, chartAreaRef.current]);
+
+  // Offset for long and short text above the line
+  const LONG_TEXT_OFFSET = 24;
+  const SHORT_TEXT_OFFSET = 8;
+
+  useEffect(() => {
+    if (barEndIndex === 0) {
+      setShowCenterText(true);
+      setCenterTextStyle({
+        position: "absolute",
+        top: labelStyle.top - LONG_TEXT_OFFSET,
+        left: labelStyle.left,
+        color: "#DDA0DD",
+        fontSize: 36,
+        fontWeight: 400,
+        zIndex: 100,
+        pointerEvents: "none",
+        opacity: 1,
+        transition: "opacity 1.5s cubic-bezier(.77,0,.18,1)"
+      });
+    } else {
+      setCenterTextStyle(prev => ({
+        ...prev,
+        opacity: 0,
+        transition: "opacity 1.5s cubic-bezier(.77,0,.18,1)"
+      }));
+      setTimeout(() => setShowCenterText(false), 1500);
+    }
+  }, [barEndIndex, labelStyle.top, labelStyle.left]);
 
   // Slider and controls style
   const controlsStyle = {
@@ -202,9 +233,39 @@ export default function AnimatedExtinctionChart() {
             <ReferenceLine y={BACKGROUND_RATE} stroke="#DDA0DD" strokeDasharray="4 4" strokeWidth={3} />
           </BarChart>
         </ResponsiveContainer>
-        {/* Small purple text for background extinction rate */}
-        <div style={labelStyle}>
+        {/* Show the long text above the line when barEndIndex == 0, otherwise show the short text with fade in/out */}
+        {/* Both texts always rendered, with independent opacity and offset */}
+        <div
+          style={{
+            position: "absolute",
+            top: labelStyle.top - LONG_TEXT_OFFSET,
+            left: labelStyle.left,
+            color: "#DDA0DD",
+            fontSize: 36,
+            fontWeight: 400,
+            zIndex: 100,
+            pointerEvents: "none",
+            opacity: barEndIndex === 0 ? 1 : 0,
+            transition: "opacity 1.5s cubic-bezier(.77,0,.18,1)"
+          }}
+        >
           A normal background extinction rate is 1 species every 400 years. Or 0.25 species every 100 years.
+        </div>
+        <div
+          style={{
+            position: "absolute",
+            top: labelStyle.top - SHORT_TEXT_OFFSET,
+            left: labelStyle.left,
+            color: "#DDA0DD",
+            fontWeight: 400,
+            fontSize: 20,
+            zIndex: 100,
+            pointerEvents: "none",
+            opacity: barEndIndex > 0 ? 1 : 0,
+            transition: "opacity 1.5s cubic-bezier(.77,0,.18,1)"
+          }}
+        >
+          normal extinction rate
         </div>
       </div>
     </div>
