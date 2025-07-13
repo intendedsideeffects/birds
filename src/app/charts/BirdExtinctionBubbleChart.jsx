@@ -302,7 +302,7 @@ export default function BirdExtinctionBubbleChart() {
             Since 5000 BCE, 1298 bird species have gone extinct. 90% were caused by <span style={{color:'black',fontWeight:'bold'}}>human activity</span>. The rest, due to <span style={{color:'rgba(128,0,128,0.4)',fontWeight:'bold'}}>natural causes</span>.
           </div>
           <div style={{ marginTop: 12, fontSize: 16, color: '#444' }}>
-            Move your mouse to explore.
+            {/* Move your mouse to explore. */}
           </div>
           <div style={{ height: 38 }}></div>
         </div>
@@ -333,7 +333,8 @@ export default function BirdExtinctionBubbleChart() {
                 }}
                 title={b.group}
               />
-              {visibleTooltips.includes(idx) && (
+              {/* Tooltip rendering - commented out for now */}
+              {/* {visibleTooltips.includes(idx) && (
                 <div
                   style={{
                     position: "absolute",
@@ -363,7 +364,7 @@ export default function BirdExtinctionBubbleChart() {
                 >
                   {b.group === 'Other' ? 'Natural' : b.group}
                 </div>
-              )}
+              )} */}
             </React.Fragment>
           );
         })}

@@ -99,38 +99,16 @@ export default function VoronoiProportionComparison() {
   // Generate bubbles after we know the real size
   useEffect(() => {
     if (!dimensions.width || !dimensions.height) return;
-    // Calculate area ratio
-    const areaAll = allSpecies.count;
-    const areaExtinct = extinctSpecies.count;
-    // The area of a circle is proportional to the number of species
-    // So radius = sqrt(area/pi)
-    const leftMargin = 40;
-    const gap = 600;
-    const centerY = dimensions.height / 2;
-    // Initial radii
-    let maxRadius = Math.min(dimensions.width, dimensions.height) / 3.2;
-    let minRadius = Math.max(maxRadius * Math.sqrt(areaExtinct / areaAll), 100);
-    // Check if both blobs fit, otherwise scale down
-    const totalWidthNeeded = maxRadius + minRadius + gap + leftMargin * 2;
-    if (totalWidthNeeded > dimensions.width) {
-      const scale = (dimensions.width - leftMargin * 2 - gap) / (maxRadius + minRadius);
-      maxRadius *= scale;
-      minRadius *= scale;
-    }
-    const leftX = leftMargin + maxRadius / 2;
-    const rightX = leftMargin + maxRadius + gap + minRadius / 2;
-    // Use 120 nodes for the big blob, 40 for the small
-    const leftNodes = generateBlobNodes(leftX, centerY, 120, allSpecies.continent, allSpecies.island, maxRadius, 'left');
-    // Ensure at least 40 nodes for the small blob
-    const rightNodeCount = Math.max(Math.round(extinctSpecies.count / 10), 60);
-    const rightNodes = generateBlobNodes(
-      rightX,
-      centerY,
-      rightNodeCount,
-      extinctSpecies.continent,
-      extinctSpecies.island,
-      minRadius
-    ).map((n) => ({ ...n, blob: "right" }));
+
+    // Set right blob radius as base, left blob radius proportional to species count
+    const rightRadius = 14;
+    const leftRadius = rightRadius * Math.sqrt(10000 / 1298);
+    const leftCenterX = 100;
+    const rightCenterX = 500;
+    const centerY = 200;
+    // Increase node counts for accurate hulls
+    const leftNodes = generateBlobNodes(leftCenterX, centerY, 100, 0.9, 0.1, leftRadius, 'left');
+    const rightNodes = generateBlobNodes(rightCenterX, centerY, 40, 0.125, 0.875, rightRadius, 'right');
     setNodes([...leftNodes, ...rightNodes]);
     setFrozen(false);
     setHomes([]);
@@ -274,13 +252,13 @@ export default function VoronoiProportionComparison() {
             )}
             {/* Right blob: extinct species */}
             {rightHull && (
-              <path d={line(rightHull)} fill="#eaeaea" opacity={1} />
+              <path d={line(rightHull)} fill="#ffe066" opacity={1} />
             )}
             {rightContinentHull && (
-              <path d={line(rightContinentHull)} fill={CONTINENT_COLOR} opacity={0.9} />
+              <path d={line(rightContinentHull)} fill="#ffe066" opacity={0.9} />
             )}
             {rightIslandHull && (
-              <path d={line(rightIslandHull)} fill={ISLAND_COLOR} opacity={0.9} />
+              <path d={line(rightIslandHull)} fill="#ffe066" opacity={0.9} />
             )}
           </>;
         })()}
