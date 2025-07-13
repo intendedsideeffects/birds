@@ -79,8 +79,8 @@ export default function BirdExtinctionVisualization() {
     const centerY = dimensions.height / 2;
     
     // NEW: Use linear scaling to make the difference more dramatic
-    const baseRadius = 40; // Base size for extinct species
-    const scalingFactor = 5; // How much bigger to make the total species blob
+    const baseRadius = 40 * 1.3; // Increase base size by 30%
+    const scalingFactor = 5 * 1.3; // Increase scaling factor by 30%
     
     const extinctSpeciesRadius = baseRadius;
     const totalSpeciesRadius = baseRadius * scalingFactor; // 5x bigger radius = 25x bigger area
@@ -241,77 +241,21 @@ export default function BirdExtinctionVisualization() {
           color: '#222',
           lineHeight: 1.2,
         }}>
-          Bird Species Extinction Disproportion
+          Island birds die out more often
         </h1>
         <div style={{
           fontSize: 18,
           fontWeight: 400,
           marginTop: 8,
-          color: '#444',
+          color: '#222',
           lineHeight: 1.4,
           maxWidth: 700,
         }}>
-          While <strong>80% of all bird species</strong> live on continents, <strong>87.5% of extinct species</strong> were from islands.
+          While 80% of species live on continents, and just <span style={{color:'#9f7aea', opacity:0.4, fontWeight:'bold'}}>20%</span> live on <span style={{color:'#9f7aea', opacity:0.4, fontWeight:'bold'}}>islands</span>, island species make up <span style={{color:'#9f7aea', opacity:0.4, fontWeight:'bold'}}>87.5%</span> of all extinctions.
         </div>
       </div>
 
       {/* Legend */}
-      <div style={{
-        position: 'absolute',
-        top: 120,
-        left: 40,
-        zIndex: 10,
-        display: 'flex',
-        gap: 30,
-        fontSize: 16,
-        fontWeight: 500,
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ 
-            width: 20, 
-            height: 20, 
-            backgroundColor: CONTINENT_COLOR,
-            borderRadius: '50%'
-          }}></div>
-          <span>Continental Species</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ 
-            width: 20, 
-            height: 20, 
-            backgroundColor: ISLAND_COLOR,
-            borderRadius: '50%'
-          }}></div>
-          <span>Island Species</span>
-        </div>
-      </div>
-
-      {/* Labels positioned relative to actual blob centers */}
-      <div style={{
-        position: 'absolute',
-        bottom: 80,
-        left: totalBlobCenter.x,
-        textAlign: 'center',
-        pointerEvents: 'none',
-        transform: 'translateX(-50%)',
-      }}>
-        <div style={{ fontSize: 20, fontWeight: 700, color: '#1a202c' }}>All Species</div>
-        <div style={{ fontSize: 16, color: '#4a5568', fontWeight: 600 }}>10,000 total</div>
-        <div style={{ fontSize: 14, color: '#4a5568' }}>80% continental, 20% island</div>
-      </div>
-
-      <div style={{
-        position: 'absolute',
-        bottom: 80,
-        left: extinctBlobCenter.x,
-        textAlign: 'center',
-        pointerEvents: 'none',
-        transform: 'translateX(-50%)',
-      }}>
-        <div style={{ fontSize: 20, fontWeight: 700, color: '#1a202c' }}>Extinct Species</div>
-        <div style={{ fontSize: 16, color: '#4a5568', fontWeight: 600 }}>1,298 total</div>
-        <div style={{ fontSize: 14, color: '#4a5568' }}>12.5% continental, 87.5% island</div>
-      </div>
 
       <svg width={dimensions.width} height={dimensions.height} style={{ display: "block" }}>
         {/* Container blobs (light grey background) */}
@@ -338,18 +282,18 @@ export default function BirdExtinctionVisualization() {
         {totalContinentNodes.length > 2 && (
           <path 
             d={line(d3.polygonHull(totalContinentNodes.map(n => [n.x, n.y])))} 
-            fill={CONTINENT_COLOR} 
-            opacity={0.9} 
-            stroke={CONTINENT_COLOR}
+            fill="#222" 
+            opacity={0.8} 
+            stroke="#222"
             strokeWidth={2}
           />
         )}
         {totalIslandNodes.length > 2 && (
           <path 
             d={line(d3.polygonHull(totalIslandNodes.map(n => [n.x, n.y])))} 
-            fill={ISLAND_COLOR} 
-            opacity={0.9} 
-            stroke={ISLAND_COLOR}
+            fill="#9f7aea" 
+            opacity={0.4} 
+            stroke="#9f7aea"
             strokeWidth={2}
           />
         )}
@@ -358,18 +302,18 @@ export default function BirdExtinctionVisualization() {
         {extinctContinentNodes.length > 2 && (
           <path 
             d={line(d3.polygonHull(extinctContinentNodes.map(n => [n.x, n.y])))} 
-            fill={CONTINENT_COLOR} 
-            opacity={0.9} 
-            stroke={CONTINENT_COLOR}
+            fill="#222" 
+            opacity={0.8} 
+            stroke="#222"
             strokeWidth={2}
           />
         )}
         {extinctIslandNodes.length > 2 && (
           <path 
             d={line(d3.polygonHull(extinctIslandNodes.map(n => [n.x, n.y])))} 
-            fill={ISLAND_COLOR} 
-            opacity={0.9} 
-            stroke={ISLAND_COLOR}
+            fill="#9f7aea" 
+            opacity={0.4} 
+            stroke="#9f7aea"
             strokeWidth={2}
           />
         )}
