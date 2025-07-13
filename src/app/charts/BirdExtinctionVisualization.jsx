@@ -191,7 +191,16 @@ export default function BirdExtinctionVisualization() {
           lineHeight: 1.4,
           maxWidth: 700,
         }}>
-          While 80% of species live on continents, and just <span style={{color:'#9f7aea', opacity:0.4, fontWeight:'bold'}}>20%</span> live on <span style={{color:'#9f7aea', opacity:0.4, fontWeight:'bold'}}>islands</span>, island species make up <span style={{color:'#9f7aea', opacity:0.4, fontWeight:'bold'}}>87.5%</span> of all extinctions.<br />Island birds went extinct more often because they evolved without predators, lived in small populations, and couldn't cope with rapid human-driven changes like invasive species, habitat loss, and disease.
+          <span style={{ fontWeight: 'bold' }}>
+            80% of bird species live on continents
+          </span>
+          {`, but `}
+          <span style={{ fontWeight: 'bold', color: '#9f7aea', opacity: 0.4 }}>
+            island species make up 87.5% of all bird species extinctions
+          </span>
+          {`. `}
+          <br />
+          Island birds went extinct more often because they evolved without predators, lived in small populations, and couldn't cope with rapid human-driven changes like the introduction of invasive species, habitat loss, and disease.
         </div>
       </div>
       <svg width={dimensions.width} height={dimensions.height} style={{ display: "block" }}>
@@ -270,7 +279,7 @@ export default function BirdExtinctionVisualization() {
         {/* Annotations with curved arrows */}
         {/* Left (large blob): all ~10,000 bird species */}
         <path
-          d={`M ${dimensions.width * 0.16} ${dimensions.height * 0.78} Q ${dimensions.width * 0.22} ${dimensions.height * 0.72}, ${dimensions.width * 0.30} ${dimensions.height * 0.68}`}
+          d={`M ${dimensions.width * 0.16} ${dimensions.height * 0.78} Q ${dimensions.width * 0.22} ${dimensions.height * 0.72}, ${dimensions.width * 0.26} ${dimensions.height * 0.70}`}
           fill="none"
           stroke="#222"
           strokeWidth="2"
@@ -291,7 +300,7 @@ export default function BirdExtinctionVisualization() {
         </text>
         {/* Right (small blob): all ~1,300 extinct species */}
         <path
-          d={`M ${dimensions.width * 0.87} ${dimensions.height * 0.32} Q ${dimensions.width * 0.82} ${dimensions.height * 0.36}, ${dimensions.width * 0.76} ${dimensions.height * 0.40}`}
+          d={`M ${dimensions.width * 0.87} ${dimensions.height * 0.32} Q ${dimensions.width * 0.80} ${dimensions.height * 0.38}, ${dimensions.width * 0.72} ${dimensions.height * 0.44}`}
           fill="none"
           stroke="#222"
           strokeWidth="2"
