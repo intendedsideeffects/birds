@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import * as d3 from "d3";
+import { geoSpilhausProjection } from "d3-geo-projection";
 
 export default function BirdExtinctionVisualization() {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
