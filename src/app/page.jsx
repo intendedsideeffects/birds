@@ -178,6 +178,49 @@ export default function TestScroll() {
           </div>
         </div>
       </section>
+      {/* Grey segment with intro text inside */}
+      <section
+        style={{
+          width: '100%',
+          minHeight: '100vh',
+          background: '#F7FAFB',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+        }}
+      >
+        {/* Add empty space above the intro text */}
+        <div style={{height: '2rem'}} />
+        <div style={{height: '2rem'}} />
+        <div style={{height: '2rem'}} />
+        <div style={{height: '2rem'}} />
+        <div style={{
+          maxWidth: '700px',
+          margin: '6rem auto 0 auto',
+          padding: '0 1rem',
+          textAlign: 'center',
+          color: '#111',
+        }}>
+          <h2 style={{
+            fontSize: '2rem',
+            fontWeight: 700,
+            marginBottom: '1.5rem',
+            letterSpacing: '-.01em'
+          }}>
+            How Fast Are Birds Disappearing?
+          </h2>
+          <p style={{
+            fontSize: '1.15rem',
+            color: '#222',
+            marginBottom: '0',
+            lineHeight: 1.6
+          }}>
+            For millennia, bird extinctions were rare. But in the last few centuries, the rate has skyrocketed—driven by habitat loss, invasive species, and climate change. This chart shows how today’s extinction rate far exceeds what’s natural.
+          </p>
+        </div>
+        {/* Place your chart or other content here */}
+      </section>
     </div>
   );
 }
