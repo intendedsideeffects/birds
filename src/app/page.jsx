@@ -1,82 +1,171 @@
-"use client";
-import { useEffect, useState } from 'react';
-import dynamic from 'next/dynamic';
-import { VideoPlayer } from './components/video-player';
-// import NewsFooter from './components/NewsFooter';
-// import ChronologyLoss from './components/ChronologyLossSection';
-import MiroSection from './components/MiroSection';
-import PoemDisplay from './components/PoemDisplay';
-import StorytellingSection from './components/StorytellingSection';
-import TransitionToLossSection from './components/TransitionToLossSection';
-// import HeroOverlay from './components/HeroOverlay';
-import DonutChart from './components/DonutChart';
-import QuestionTransitionSection from './components/QuestionTransitionSection';
-import PoemToQuestionTransition from './components/PoemToQuestionTransition';
+'use client';
 
-const DynamicChart2 = dynamic(() => import('./App'), {
-  ssr: false,
-  loading: () => <div>Loading visualization...</div>,
-});
+import React, { useState, useRef, useEffect } from 'react';
 
-export default function Home() {
+const poemLines = [
+  "Birds are falling from the sky.",
+  "One, two - many!",
+  "An exponential loss of stories and sound.",
+  "And still, it goes unnoticed.",
+  "\u00A0", // Non-breaking space for a visible empty line
+  "Where is our mind,",
+  "if not here,",
+  "now,",
+  "for our own collapse?",
+];
+
+export default function TestScroll() {
+  const [isPlaying, setIsPlaying] = useState(true);
+  const videoRef = useRef();
+  const poemWrapperRef = useRef();
+
+  // Pause/play logic for video
+  const togglePlay = () => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
   return (
-    <main className="min-h-screen">
-      {/* Video at the top */}
-      <VideoPlayer />
-      {/* Poem and overlay transition with chart content */}
-      <PoemToQuestionTransition>
-        <StorytellingSection />
-      </PoemToQuestionTransition>
+    <div style={{ width: '100%', minHeight: '300vh', background: '#f8f8f8', position: 'relative' }}>
+      {/* Video Section */}
+      <section style={{ position: 'relative', height: '100vh', width: '100%', background: '#222', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+        <video
+          ref={videoRef}
+          src="/Birds_Final_UHD_noHUD.mp4"
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', background: '#222' }}
+          autoPlay
+          loop
+          muted
+          playsInline
+        />
+        {/* White overlay to cover any black line at the bottom edge */}
+        <div style={{
+          position: 'absolute',
+          left: 0,
+          bottom: 0,
+          width: '100%',
+          height: '14px',
+          background: 'white',
+          zIndex: 10,
+          pointerEvents: 'none',
+        }} />
+        {/* Centered LOSS title and pause/play button */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 11,
+          pointerEvents: 'none',
+        }}>
+          <h1 style={{
+            fontSize: '6rem',
+            fontWeight: 700,
+            letterSpacing: '-.05em',
+            marginBottom: '1.5rem',
+            fontFamily: 'inherit',
+            textAlign: 'center',
+            lineHeight: 1,
+            pointerEvents: 'auto',
+          }}>LOSS</h1>
+          <button
+            onClick={togglePlay}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              borderRadius: '50%',
+              width: '2.2rem',
+              height: '2.2rem',
+              fontSize: '1.2rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '0',
+              pointerEvents: 'auto',
+            }}
+            aria-label={isPlaying ? 'Pause video' : 'Play video'}
+          >
+            {isPlaying ? (
+              <svg width="1.2rem" height="1.2rem" viewBox="0 0 28 28" style={{ display: 'block' }}>
+                <rect x="7" y="5" width="4" height="18" fill="black" />
+                <rect x="17" y="5" width="4" height="18" fill="black" />
+              </svg>
+            ) : (
+              <svg width="1.2rem" height="1.2rem" viewBox="0 0 28 28" style={{ display: 'block' }}>
+                <polygon points="8,5 22,14 8,23" fill="black" />
+              </svg>
+            )}
+          </button>
+        </div>
+      </section>
 
-      {/* Hero section with video and poem overlay */}
-      {/* <HeroOverlay /> */}
+      {/* White overlay at the seam between video and poem */}
+      <div style={{
+        position: 'absolute',
+        top: '100vh',
+        left: 0,
+        width: '100%',
+        height: '14px',
+        background: 'white',
+        zIndex: 9999,
+        pointerEvents: 'none',
+      }} />
 
-      {/* Content container for Scatterplot and Add Story */}
-      <div id="content-container" className="relative z-10 w-full items-center justify-center font-mono text-sm pb-96 mt-20">
-        {/* Transition to loss of stories/sound/memory */}
-        <TransitionToLossSection />
-
-        {/* Scatterplot Section */}
-        <DynamicChart2 />
-
-        {/* Add yellow donut chart directly under the scatterplot */}
-        <section className="w-full max-w-6xl mx-auto py-32 px-8 flex flex-col items-center font-arial-sans">
-          <h2 className="text-3xl md:text-4xl font-bold mb-16 font-arial-sans text-left mx-auto" style={{color: '#e0b800', maxWidth: '900px'}}>
-            Nearly half of all bird species are in trouble, with many facing an uncertain future.
-          </h2>
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', marginBottom: '30vh' }}>
-            <DonutChart
-              data={[
-                { name: 'Endangered', value: 23.8 },
-                { name: 'Declining', value: 26.2 },
-                { name: 'Stable/Increasing', value: 50 },
-              ]}
-              width={1200}
-              height={600}
-              colors={['#e0b800', '#e0b800', '#e0b800']}
-              labelColor="#e0b800"
-              lineColor="#e0b800"
-            />
+      {/* Poem Section (no overlay) */}
+      <section
+        ref={poemWrapperRef}
+        style={{
+          position: 'relative',
+          height: '100vh',
+          width: '100%',
+          background: 'white',
+        }}
+      >
+        {/* Sticky poem content */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'white',
+            flexDirection: 'column',
+            pointerEvents: 'auto',
+          }}
+        >
+          <div style={{
+            color: 'black',
+            fontSize: '1.5rem',
+            maxWidth: '600px',
+            textAlign: 'left',
+            fontFamily: 'Arial, Helvetica, sans-serif',
+            fontWeight: 400,
+            lineHeight: 1.5,
+            zIndex: 2,
+            position: 'relative',
+          }}>
+            {poemLines.map((line, idx) => (
+              <p key={idx} style={{ marginBottom: '2rem', fontSize: '1.5rem' }}>{line}</p>
+            ))}
           </div>
-          <div className="w-full flex flex-col items-center">
-            <p className="text-3xl md:text-4xl font-bold font-arial-sans text-left mx-auto" style={{color: '#e0b800', maxWidth: '900px', marginBottom: '60vh'}}>
-              Over 1,400 bird species are currently threatened with extinction. If current trends continue, scientists project that up to <span className="font-bold">30%</span> of all bird species could be extinct or facing extinction by 2100.
-            </p>
-            <p className="text-3xl md:text-4xl font-bold font-arial-sans text-left mx-auto" style={{color: '#e0b800', maxWidth: '900px', marginTop: 0}}>
-              By 2200, this number could rise to <span className="font-bold">50%</span> of all bird species if threats are not addressed.
-            </p>
-          </div>
-        </section>
-
-        {/* Removed ChronologyLoss */}
-        {/* Removed NewsFooter */}
-        {/* <MiroSection /> */}
-
-        {/* Removed Add Story section */}
-
-        {/* Removed success message */}
-        {/* Removed error message */}
-      </div>
-    </main>
+        </div>
+      </section>
+    </div>
   );
 }
