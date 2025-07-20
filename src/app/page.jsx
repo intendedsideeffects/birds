@@ -79,6 +79,18 @@ export default function TestScroll() {
             lineHeight: 1,
             pointerEvents: 'auto',
           }}>LOSS</h1>
+          <div style={{
+            fontSize: '1.5rem',
+            fontWeight: 400,
+            color: '#222',
+            textAlign: 'center',
+            maxWidth: '700px',
+            margin: '0 auto 2.5rem auto',
+            lineHeight: 1.3,
+            pointerEvents: 'auto',
+          }}>
+            A Visual Chronicle of Extinction
+          </div>
           <button
             onClick={togglePlay}
             style={{
