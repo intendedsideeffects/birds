@@ -451,15 +451,6 @@ export default function AnimatedExtinctionChartCopy() {
             marginTop: 0,
           }}
         />
-        <div style={{
-          marginTop: 8,
-          fontSize: 13,
-          color: '#888',
-          opacity: 0.5,
-          textAlign: 'center',
-        }}>
-          Move slider to see the change.
-        </div>
       </div>
       {/* Custom slider styles */}
       <style>{`
@@ -521,7 +512,6 @@ export default function AnimatedExtinctionChartCopy() {
               tickLine={{ stroke: '#e0e0e0', strokeWidth: 1 }}
               height={50}
             >
-              <Label value="Year (100 Year Bin)" position="bottom" offset={30} style={{ fill: '#888', fontSize: 13, fontWeight: 400 }} />
             </XAxis>
             <YAxis
               domain={() => {
@@ -558,79 +548,73 @@ export default function AnimatedExtinctionChartCopy() {
             />
           </BarChart>
         </ResponsiveContainer>
-        {annotations.map(({ year, label }, idx) => {
-          const show = barEndIndex > data.findIndex(d => d.year >= year);
-          if (!show) return null;
-          const annotationPos = getAnnotationPos(year);
-          const barTopY = annotationPos.y;
-          const marginTop = 100; // matches BarChart top margin
-          const chartTop = marginTop + 10;
-          const fixedOffset = 72;
-          // Place text above the bar, with a gap to avoid overlap with the line
-          const textLineGap = 32; // px gap between text and line end (increased for more space)
-          let textTop = barTopY - fixedOffset - textLineGap;
-          if (idx === 1) textTop -= 25; // Move second annotation 25px further up
-          if (idx === 0) textTop -= 25; // Move first annotation 25px further up
-          if (idx === 0 || idx === 1 || idx === 2) textTop -= 40; // Move all three annotation texts 40px further up
-          textTop += 30; // Move all annotation texts 30px down
-          if (textTop < chartTop) textTop = chartTop;
-          // Calculate bar width in pixels for relative offset
-          let barWidth = 0;
-          if (chartAreaRef.current && data.length > 0) {
+        {/* Move annotation labels below the x axis */}
+        <div style={{ position: 'absolute', left: 0, bottom: 0, width: '100%', pointerEvents: 'none', zIndex: 10 }}>
+          {annotations.map(({ year, label }) => {
+            const show = barEndIndex > data.findIndex(d => d.year >= year);
+            if (!show) return null;
+            if (!chartAreaRef.current || !data.length) return null;
             const chartRect = chartAreaRef.current.getBoundingClientRect();
             const chartWidth = chartRect.width;
             const chartMarginLeft = 40;
             const chartMarginRight = 40;
+            const minYear = -5000;
+            const maxYear = 2200;
             const innerWidth = chartWidth - chartMarginLeft - chartMarginRight;
-            const barCount = data.length;
-            barWidth = innerWidth / barCount;
-          }
-          // Offset the first annotation (idx === 0) by -0.35 * barWidth, the second (idx === 1) by -0.22 * barWidth, the third (idx === 2) by -0.48 * barWidth, 0 for others
-          const xOffset = idx === 0 ? -0.35 * barWidth : (idx === 1 ? -0.22 * barWidth : (idx === 2 ? -0.48 * barWidth : 0));
-          const textLeft = annotationPos.x + xOffset;
-          // The line should start 7px above the bar top and end just below the text
-          let lineStartY = barTopY - 7 + 40; // Make the line 40px shorter by moving the start down
-          if (idx === 1) lineStartY -= 25; // Move second annotation's line start 25px further up
-          if (idx === 0) lineStartY -= 25; // Move first annotation's line start 25px further up
-          const lineEndY = textTop + 22; // 22px is approx text height
-          // Calculate and log bar width in pixels
-          if (chartAreaRef.current && data.length > 0) {
-            const chartRect = chartAreaRef.current.getBoundingClientRect();
-            const chartWidth = chartRect.width;
-            const chartMarginLeft = 40;
-            const chartMarginRight = 40;
-            const innerWidth = chartWidth - chartMarginLeft - chartMarginRight;
-            const barCount = data.length;
-            barWidth = innerWidth / barCount;
-            console.log('Bar width (px):', barWidth);
-          }
-          return (
-            <React.Fragment key={year}>
-              {/* Annotation text above the bar */}
-              <div
-                style={{
-                  position: 'absolute',
-                  left: textLeft,
-                  top: textTop,
-                  transform: 'translateX(-50%)',
-                  pointerEvents: 'none',
-                  zIndex: 10,
-                  fontSize: 15,
-                  fontWeight: 400,
-                  color: '#111',
-                  background: 'none',
-                  padding: 0,
-                  marginBottom: 0,
-                  boxShadow: 'none',
-                  whiteSpace: 'nowrap',
-                  textAlign: 'center',
-                }}
-              >
-                {formatLabel(label)}
-              </div>
-            </React.Fragment>
-          );
-        })}
+            // Find which bin this annotation year falls into
+            const binIdx = data.findIndex(d => {
+              return year >= d.year && year < d.year + 100;
+            });
+            if (binIdx === -1) return null;
+            const bin = data[binIdx];
+            const binStartYear = bin.year;
+            const binCenterYear = binStartYear + 50;
+            const t = (binCenterYear - minYear) / (maxYear - minYear);
+            const x = chartMarginLeft + t * innerWidth;
+            // Move lines 1cm up, annotations 3cm up
+            const annotationTop = `calc(100% - 1cm)`;
+            return (
+              <React.Fragment key={year}>
+                {/* Vertical line from x axis up to top of annotation label */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    left: x,
+                    bottom: '1cm',
+                    width: 0,
+                    height: '2cm',
+                    borderLeft: '1px solid #e0e0e0',
+                    zIndex: 9,
+                    pointerEvents: 'none',
+                  }}
+                />
+                <div
+                  style={{
+                    position: 'absolute',
+                    left: x,
+                    top: annotationTop,
+                    transform: 'translateX(-50%)',
+                    fontSize: 13,
+                    color: '#888',
+                    background: 'none',
+                    padding: 0,
+                    margin: 0,
+                    whiteSpace: 'pre-line',
+                    textAlign: 'center',
+                    fontWeight: 400,
+                    pointerEvents: 'none',
+                  }}
+                >
+                  {label.split(' ').map((word, i, arr) =>
+                    i < arr.length - 1 ? word + '\n' : word
+                  ).join('').split('\n').map((line, idx) => (
+                    <div key={idx}>{line}</div>
+                  ))}
+                </div>
+              </React.Fragment>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
