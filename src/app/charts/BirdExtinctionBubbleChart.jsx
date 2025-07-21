@@ -34,7 +34,7 @@ const VIEWS = [
     label: "90% of extinct species went extinct due to human activities.",
     groups: [
       { count: Math.round(TOTAL_BIRDS * 0.9), color: "rgba(0,0,0,0.8)", label: "Human-caused" },
-      { count: TOTAL_BIRDS - Math.round(TOTAL_BIRDS * 0.9), color: "rgba(128,0,128,0.3)", label: "Other" },
+      { count: TOTAL_BIRDS - Math.round(TOTAL_BIRDS * 0.9), color: "#e5dfcc", label: "Other" },
     ],
   },
   // {
@@ -77,7 +77,8 @@ function generateBubbles(groups) {
   return bubbles;
 }
 
-const BUBBLE_RADIUS = 7;
+// Reduce bubble radius by 20%
+const BUBBLE_RADIUS = 7 * 0.8;
 
 export default function BirdExtinctionBubbleChart() {
   const [view, setView] = useState(0);
@@ -101,8 +102,8 @@ export default function BirdExtinctionBubbleChart() {
   useEffect(() => {
     function updateSize() {
       setDimensions({
-        width: Math.min(window.innerWidth, 1100),
-        height: Math.min(window.innerHeight - 120, 900),
+        width: Math.min(window.innerWidth, 1100) * 0.8,
+        height: Math.min(window.innerHeight - 120, 900) * 0.8,
       });
     }
     updateSize();
@@ -267,45 +268,32 @@ export default function BirdExtinctionBubbleChart() {
   return (
     <div style={{ padding: 20, textAlign: "center" }}>
       <style>{tooltipStyles}</style>
-      {/* Title and subtitle block, matching AnimatedExtinctionChart */}
+      {/* Title and subtitle block */}
       <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 40,
-        zIndex: 10,
+        maxWidth: '700px',
+        margin: '0 auto 2rem auto',
+        padding: '0 1rem',
         textAlign: 'left',
-        width: 'auto',
-        pointerEvents: 'none',
-        paddingTop: 16,
+        color: '#111',
       }}>
-        <h1 style={{
-          fontSize: 32,
+        <h2 style={{
+          fontSize: '2rem',
           fontWeight: 700,
-          margin: 0,
-          color: '#222',
-          letterSpacing: 0.5,
-          lineHeight: 1.2,
+          marginBottom: '1.5rem',
+          letterSpacing: '-.01em',
+          textAlign: 'left',
         }}>
           Each dot represents a bird species lost to extinction.
-        </h1>
-        <div style={{
-          fontSize: 18,
-          fontWeight: 400,
-          marginTop: 8,
-          color: '#444',
-          lineHeight: 1.4,
-          maxWidth: 700,
-          marginLeft: 0,
-          marginRight: 0,
+        </h2>
+        <p style={{
+          fontSize: '1.15rem',
+          color: '#222',
+          marginBottom: '0',
+          lineHeight: 1.6,
+          textAlign: 'left',
         }}>
-          <div>
-            Since 5000 BCE, 1298 bird species have gone extinct. 90% were caused by <span style={{color:'black',fontWeight:'bold'}}>human activity</span>. The rest, due to <span style={{color:'rgba(128,0,128,0.4)',fontWeight:'bold'}}>natural causes</span>.
-          </div>
-          <div style={{ marginTop: 12, fontSize: 16, color: '#444' }}>
-            {/* Move your mouse to explore. */}
-          </div>
-          <div style={{ height: 38 }}></div>
-        </div>
+          Since 5000 BCE, 1298 bird species have gone extinct. 90% were caused by <span style={{color:'black',fontWeight:'bold'}}>human activity</span>. The rest were due to <span style={{color:'#e5dfcc',fontWeight:'bold'}}>natural causes</span>.
+        </p>
       </div>
       {/* Bubble chart container */}
       <div
@@ -368,11 +356,6 @@ export default function BirdExtinctionBubbleChart() {
             </React.Fragment>
           );
         })}
-      </div>
-      <div style={{ marginTop: 30 }}>
-        <button onClick={() => setView((view + 1) % VIEWS.length)} disabled>
-          Next View
-        </button>
       </div>
     </div>
   );

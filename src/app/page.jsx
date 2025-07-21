@@ -1,6 +1,9 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import AnimatedExtinctionChartCopy from "./charts/AnimatedExtinctionChartCopy";
+import BirdExtinctionBubbleChart from "./charts/BirdExtinctionBubbleChart";
+import PlotsScatterChart from "./components/PlotsScatterChart";
 
 const poemLines = [
   "Birds are falling from the sky.",
@@ -19,6 +22,17 @@ export default function TestScroll() {
   const videoRef = useRef();
   const poemWrapperRef = useRef();
 
+  // Slider state for chart
+  const [barEndIndex, setBarEndIndex] = useState(0);
+  const [maxBarIndex, setMaxBarIndex] = useState(0); // Start at 0
+
+  // Clamp barEndIndex if maxBarIndex changes
+  useEffect(() => {
+    if (barEndIndex > maxBarIndex) {
+      setBarEndIndex(maxBarIndex);
+    }
+  }, [maxBarIndex]);
+
   // Pause/play logic for video
   const togglePlay = () => {
     if (videoRef.current) {
@@ -29,6 +43,11 @@ export default function TestScroll() {
       }
       setIsPlaying(!isPlaying);
     }
+  };
+
+  // Handler for slider change
+  const handleSliderChange = (event) => {
+    setBarEndIndex(parseInt(event.target.value));
   };
 
   return (
@@ -199,14 +218,15 @@ export default function TestScroll() {
           maxWidth: '700px',
           margin: '6rem auto 0 auto',
           padding: '0 1rem',
-          textAlign: 'center',
+          textAlign: 'left',
           color: '#111',
         }}>
           <h2 style={{
             fontSize: '2rem',
             fontWeight: 700,
             marginBottom: '1.5rem',
-            letterSpacing: '-.01em'
+            letterSpacing: '-.01em',
+            textAlign: 'left',
           }}>
             How Fast Are Birds Disappearing?
           </h2>
@@ -214,12 +234,140 @@ export default function TestScroll() {
             fontSize: '1.15rem',
             color: '#222',
             marginBottom: '0',
-            lineHeight: 1.6
+            lineHeight: 1.6,
+            textAlign: 'left',
           }}>
-            For millennia, bird extinctions were rare. But in the last few centuries, the rate has skyrocketed—driven by habitat loss, invasive species, and climate change. This chart shows how today’s extinction rate far exceeds what’s natural.
+            For millennia, bird extinctions were rare. But in the last few centuries, the rate has skyrocketed—driven by habitat loss, invasive species, and climate change. This chart shows how today’s extinction rate <b>far exceeds</b> what’s natural.
           </p>
+          <div style={{ height: '1.5em' }} />
+          <div style={{
+            fontSize: '1.15rem',
+            color: '#222',
+            marginTop: '0.7em',
+            lineHeight: 1.6,
+            textAlign: 'left',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0,
+          }}>
+            <span><b>Move slider</b> to see the change.</span>
+            {maxBarIndex > 0 && (
+              <input
+                type="range"
+                min="0"
+                max={maxBarIndex}
+                value={barEndIndex}
+                onChange={handleSliderChange}
+                style={{ width: '180px', marginLeft: '1em', background: 'none', pointerEvents: 'auto', position: 'relative', zIndex: 1000 }}
+                className="custom-slider"
+              />
+            )}
+            <style>{`
+              input[type='range'].custom-slider {
+                -webkit-appearance: none;
+                width: 180px;
+                height: 6px;
+                background: #ddd;
+                border-radius: 3px;
+                outline: none;
+                margin: 0;
+                padding: 0;
+                pointer-events: auto;
+              }
+              input[type='range'].custom-slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                background: #000;
+                cursor: pointer;
+                box-shadow: 0 0 2px rgba(0,0,0,0.2);
+                border: none;
+                margin-top: -5px;
+                pointer-events: auto;
+              }
+              input[type='range'].custom-slider::-moz-range-thumb {
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                background: #000;
+                cursor: pointer;
+                border: none;
+                pointer-events: auto;
+              }
+              input[type='range'].custom-slider::-ms-thumb {
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                background: #000;
+                cursor: pointer;
+                border: none;
+                pointer-events: auto;
+              }
+              input[type='range'].custom-slider::-webkit-slider-runnable-track {
+                height: 6px;
+                background: #ddd;
+                border-radius: 3px;
+              }
+              input[type='range'].custom-slider::-ms-fill-lower {
+                background: #ddd;
+                border-radius: 3px;
+              }
+              input[type='range'].custom-slider::-ms-fill-upper {
+                background: #ddd;
+                border-radius: 3px;
+              }
+              input[type='range'].custom-slider:focus {
+                outline: none;
+              }
+              input[type='range'].custom-slider::-ms-tooltip {
+                display: none;
+              }
+            `}</style>
+          </div>
         </div>
         {/* Place your chart or other content here */}
+        <div style={{ width: '100%', maxWidth: 1400, margin: '0 auto', marginTop: 'calc(1.5rem - 2cm)', marginBottom: '3rem' }}>
+          <AnimatedExtinctionChartCopy
+            barEndIndex={barEndIndex}
+            setMaxBarIndex={setMaxBarIndex}
+          />
+        </div>
+        {/* Add the new BirdExtinctionBubbleChart here */}
+        <div style={{ width: '100%', maxWidth: 1400, margin: '3rem auto', padding: '0 1rem' }}>
+          <BirdExtinctionBubbleChart />
+        </div>
+        {/* Add PlotsScatterChart below with title and description */}
+        <div style={{ width: '100%', maxWidth: 1400, margin: '3rem auto', padding: '0 1rem' }}>
+          <div style={{
+            maxWidth: '700px',
+            margin: '0 auto 2rem auto',
+            padding: '0 1rem',
+            textAlign: 'left',
+            color: '#111',
+          }}>
+            <h2 style={{
+              fontSize: '2rem',
+              fontWeight: 700,
+              marginBottom: '1.5rem',
+              letterSpacing: '-.01em',
+              textAlign: 'left',
+            }}>
+              Extinction Risk and Traits
+            </h2>
+            <p style={{
+              fontSize: '1.15rem',
+              color: '#222',
+              marginBottom: '0',
+              lineHeight: 1.6,
+              textAlign: 'left',
+            }}>
+              This chart explores how different traits—such as body size, range, and habitat—relate to the extinction risk of bird species. Each dot is a species, colored by its threat status. Patterns reveal which traits make birds more vulnerable to extinction.
+            </p>
+          </div>
+          <PlotsScatterChart />
+        </div>
       </section>
     </div>
   );
