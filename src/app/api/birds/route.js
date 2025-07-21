@@ -2,6 +2,9 @@ import { supabase } from '../../utils/supabaseClient';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
+  // Log the Supabase URL to the server console for debugging
+  console.log('API Route is connecting to Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+
   const { data, error } = await supabase
     .from('bird_stories')
     .select('*');

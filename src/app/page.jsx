@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import AnimatedExtinctionChartCopy from "./charts/AnimatedExtinctionChartCopy";
 import BirdExtinctionBubbleChart from "./charts/BirdExtinctionBubbleChart";
-import PlotsScatterChart from "./components/PlotsScatterChart";
+import ExtinctSpeciesViz from './components/ExtinctSpeciesViz'; // Import the new component
 
 const poemLines = [
   "Birds are falling from the sky.",
@@ -24,14 +24,7 @@ export default function TestScroll() {
 
   // Slider state for chart
   const [barEndIndex, setBarEndIndex] = useState(0);
-  const [maxBarIndex, setMaxBarIndex] = useState(0); // Start at 0
-
-  // Clamp barEndIndex if maxBarIndex changes
-  useEffect(() => {
-    if (barEndIndex > maxBarIndex) {
-      setBarEndIndex(maxBarIndex);
-    }
-  }, [maxBarIndex]);
+  const [maxBarIndex, setMaxBarIndex] = useState(0);
 
   // Pause/play logic for video
   const togglePlay = () => {
@@ -339,7 +332,7 @@ export default function TestScroll() {
           <BirdExtinctionBubbleChart />
         </div>
         {/* Add PlotsScatterChart below with title and description */}
-        <div style={{ width: '100%', maxWidth: 1400, margin: '3rem auto', padding: '0 1rem' }}>
+        <div style={{ width: '100%', margin: '3rem 0', padding: '0 1rem' }}>
           <div style={{
             maxWidth: '700px',
             margin: '0 auto 2rem auto',
@@ -366,7 +359,7 @@ export default function TestScroll() {
               This chart explores how different traits—such as body size, range, and habitat—relate to the extinction risk of bird species. Each dot is a species, colored by its threat status. Patterns reveal which traits make birds more vulnerable to extinction.
             </p>
           </div>
-          <PlotsScatterChart />
+          <ExtinctSpeciesViz />
         </div>
       </section>
     </div>
