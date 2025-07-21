@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Label, ReferenceLine, ReferenceArea } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Label, ReferenceLine, ReferenceArea, CartesianGrid } from "recharts";
 import * as d3 from "d3-fetch";
 
 const BACKGROUND_RATE = 0.25; // 1 species every 400 years
@@ -447,17 +447,18 @@ export default function AnimatedExtinctionChartCopy() {
           onChange={handleSliderChange}
           style={{
             ...sliderStyle,
+            width: "180px",
             marginTop: 0,
           }}
         />
         <div style={{
           marginTop: 8,
-          fontSize: 15,
-          color: '#444',
-          opacity: 0.6,
+          fontSize: 13,
+          color: '#888',
+          opacity: 0.5,
           textAlign: 'center',
         }}>
-          Move the slider to see the change.
+          Move slider to see the change.
         </div>
       </div>
       {/* Custom slider styles */}
@@ -487,6 +488,8 @@ export default function AnimatedExtinctionChartCopy() {
           <BarChart data={
             data.map((d, i) => ({ ...d, birds_falling: i <= barEndIndex ? d.birds_falling : 0, index: i, dataLength: data.length }))
           } margin={{ top: 100, right: 40, left: 40, bottom: 100 }}>
+            {/* Add horizontal gridlines */}
+            <CartesianGrid stroke="#e0e0e0" strokeDasharray="3 3" vertical={false} />
             {/* Light purple, half-transparent box for extinction rate range */}
             <rect
               x={0}
@@ -502,8 +505,8 @@ export default function AnimatedExtinctionChartCopy() {
             <ReferenceArea
               y1={0.1}
               y2={1.1}
-              fill="#A259D9"
-              fillOpacity={0.25}
+              fill="#e3d6ee"
+              fillOpacity={0.85}
               ifOverflow="extendDomain"
             />
             <XAxis
@@ -511,14 +514,14 @@ export default function AnimatedExtinctionChartCopy() {
               type="number"
               domain={[-5000, 2200]}
               tickFormatter={y => (y % 1000 === 0 ? y.toString() : '')}
-              stroke="#000"
-              tick={{ fill: "#000", fontSize: 12 }}
-              ticks={xTicks}
-              axisLine={true}
-              tickLine={true}
-              height={40}
+              ticks={xTicks.filter(x => x % 1000 === 0)}
+              stroke="#aaa"
+              tick={{ fill: "#888", fontSize: 13 }}
+              axisLine={{ stroke: '#e0e0e0', strokeWidth: 2 }}
+              tickLine={{ stroke: '#e0e0e0', strokeWidth: 1 }}
+              height={50}
             >
-              <Label value="Year (100-year bins)" offset={-10} position="insideBottom" fill="#000" />
+              <Label value="Year (100 Year Bin)" position="bottom" offset={30} style={{ fill: '#888', fontSize: 13, fontWeight: 400 }} />
             </XAxis>
             <YAxis
               domain={() => {
@@ -527,18 +530,20 @@ export default function AnimatedExtinctionChartCopy() {
                 const maxTick = ticks[ticks.length - 1];
                 return [0, maxTick];
               }}
-              stroke="#000"
-              tick={{ fill: "#000" }}
-              ticks={() => {
-                const maxBar = Math.max(0, ...data.slice(0, barEndIndex).map(d => d.birds_falling));
-                return getRobustYTicks(maxBar);
-              }}
+              stroke="#aaa"
+              tick={{ fill: "#888", fontSize: 13 }}
+              axisLine={false}
+              tickLine={false}
+              width={80}
+              interval={0}
               tickFormatter={value => {
                 if (value >= 10) return Math.round(value);
                 return value % 1 === 0 ? value.toFixed(0) : value.toFixed(1);
               }}
+              // Add grid lines
+              grid={{ stroke: '#e0e0e0', strokeDasharray: '3 3' }}
             >
-              <Label value="Extinctions per 100 Years" angle={-90} position="insideLeft" fill="#000" />
+              <Label value={"Extinctions\nper 100\nYears"} position="top" offset={20} style={{ fill: '#888', fontSize: 13, fontWeight: 400, textAlign: 'right', whiteSpace: 'pre-line', lineHeight: 1.2 }} />
             </YAxis>
             <Tooltip content={<CustomTooltip barEndIndex={barEndIndex} />} />
             <Bar
