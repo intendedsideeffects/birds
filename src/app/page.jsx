@@ -347,7 +347,7 @@ export default function TestScroll() {
               letterSpacing: '-.01em',
               textAlign: 'left',
             }}>
-              Extinction Risk and Traits
+              The Story of Loss
             </h2>
             <p style={{
               fontSize: '1.15rem',
@@ -356,7 +356,7 @@ export default function TestScroll() {
               lineHeight: 1.6,
               textAlign: 'left',
             }}>
-              This chart explores how different traits—such as body size, range, and habitat—relate to the extinction risk of bird species. Each dot is a species, colored by its threat status. Patterns reveal which traits make birds more vulnerable to extinction.
+              This scatterplot is an exploratory space to discover the lost birds and birds soon to be lost. Each dot is a species: <b>small dot</b> = just name, <b>medium dot</b> = story, <b>large dot</b> = sound. Explore to see which birds are gone, and which are at risk.
             </p>
           </div>
           <ExtinctSpeciesViz />
