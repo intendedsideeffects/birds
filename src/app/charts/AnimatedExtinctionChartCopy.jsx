@@ -202,10 +202,11 @@ function CustomTooltip({ active, payload, label, barEndIndex }) {
   );
 }
 
-export default function AnimatedExtinctionChartCopy() {
+export default function AnimatedExtinctionChartCopy({ barEndIndex, setMaxBarIndex }) {
   const marginLeft = 160; // Define at the top so it's available everywhere
   const [data, setData] = useState([]);
-  const [barEndIndex, setBarEndIndex] = useState(0);
+  // Remove internal barEndIndex state
+  // const [barEndIndex, setBarEndIndex] = useState(0);
   const [stage, setStage] = useState(0); // 0: background, 1: animated bars
   const [showOverlay, setShowOverlay] = useState(true);
   const [maxY, setMaxY] = useState(1); // max y for axis, only increases
@@ -224,7 +225,11 @@ export default function AnimatedExtinctionChartCopy() {
     } else {
       setShowSmallText(true);
     }
-  }, [barEndIndex]);
+    // Update maxY when barEndIndex or data changes
+    const visible = data.slice(0, barEndIndex + 1);
+    const localMax = Math.max(1, ...visible.map(d => d.birds_falling));
+    setMaxY(localMax);
+  }, [barEndIndex, data]);
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
@@ -239,8 +244,9 @@ export default function AnimatedExtinctionChartCopy() {
       const binned = binData(filtered);
       setData(binned);
       setMaxY(1); // Start at 1
+      if (setMaxBarIndex) setMaxBarIndex(binned.length - 1);
     });
-  }, []);
+  }, [setMaxBarIndex]);
 
   // Animation sequence - disabled for manual control only
   useEffect(() => {
@@ -250,17 +256,7 @@ export default function AnimatedExtinctionChartCopy() {
     setShowOverlay(false); // No overlay in manual mode
   }, [data]);
 
-  // Handle slider change
-  const handleSliderChange = (event) => {
-    const value = parseInt(event.target.value);
-    setBarEndIndex(value);
-    
-    // Calculate maxY for the current position - allow it to decrease when moving backward
-    const visible = data.slice(0, value);
-    const localMax = Math.max(1, ...visible.map(d => d.birds_falling));
-    setMaxY(localMax); // Always set to current max, allowing decrease
-  };
-
+  // Remove internal slider and handler
   // Prepare chart data for current animation (stacked)
   const maxExtinctions = Math.max(0, ...data.map((d, i) => (i < barEndIndex ? d.birds_falling : 0)));
   const stackedData = transformForStackedBars(data, barEndIndex);
@@ -381,8 +377,8 @@ export default function AnimatedExtinctionChartCopy() {
   // Annotation config
   const annotations = [
     { year: -1300, label: "Human settlement of islands" },
-    { year: 1300, label: "European Colonization" },
-    { year: 2000, label: "Human-driven habitat destruction" },
+    { year: 1300, label: "European colonization" },
+    { year: 2000, label: "Habitat destruction" },
   ];
   const minYear = -5000;
   const maxYear = 2200;
@@ -437,21 +433,8 @@ export default function AnimatedExtinctionChartCopy() {
   }
 
   return (
-    <div ref={chartContainerRef} style={{ width: "100%", height: "700px", background: "transparent", zIndex: 0, position: "relative", marginTop: 48 }}>
-      <div style={{ width: "100%", maxWidth: 700, margin: "0 auto", paddingTop: 24, paddingBottom: 8, display: "flex", flexDirection: "column", alignItems: "center", zIndex: 2, position: "relative" }}>
-        <input
-          type="range"
-          min="0"
-          max={Math.max(0, data.length - 1)}
-          value={barEndIndex}
-          onChange={handleSliderChange}
-          style={{
-            ...sliderStyle,
-            width: "180px",
-            marginTop: 0,
-          }}
-        />
-      </div>
+    <div ref={chartContainerRef} style={{ width: "100%", height: "750px", background: "transparent", zIndex: 0, position: "relative", marginTop: 'calc(48px + 1cm)' }}>
+      {/* Removed unnecessary padding above chart area */}
       {/* Custom slider styles */}
       <style>{`
         input[type="range"]::-webkit-slider-thumb {
@@ -477,8 +460,8 @@ export default function AnimatedExtinctionChartCopy() {
       <div ref={chartAreaRef} style={{ width: "100%", height: "calc(100% - 80px)", position: "relative", marginTop: 0 }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={
-            data.map((d, i) => ({ ...d, birds_falling: i <= barEndIndex ? d.birds_falling : 0, index: i, dataLength: data.length }))
-          } margin={{ top: 100, right: 40, left: 40, bottom: 100 }}>
+            data.map((d, i) => ({ ...d, birds_falling: i < barEndIndex + 1 ? d.birds_falling : 0, index: i, dataLength: data.length }))
+          } margin={{ top: 40, right: 40, left: 40, bottom: 60 }}>
             {/* Add horizontal gridlines */}
             <CartesianGrid stroke="#e0e0e0" strokeDasharray="3 3" vertical={false} />
             {/* Light purple, half-transparent box for extinction rate range */}
@@ -496,7 +479,7 @@ export default function AnimatedExtinctionChartCopy() {
             <ReferenceArea
               y1={0.1}
               y2={1.1}
-              fill="#e3d6ee"
+              fill="#e5dfcc"
               fillOpacity={0.85}
               ifOverflow="extendDomain"
             />
@@ -512,11 +495,13 @@ export default function AnimatedExtinctionChartCopy() {
               tickLine={{ stroke: '#e0e0e0', strokeWidth: 1 }}
               height={50}
             >
+              <Label value="Year" position="insideRight" offset={-15} style={{ fill: '#888', fontSize: 13, fontWeight: 400, textAlign: 'right' }} />
             </XAxis>
             <YAxis
               domain={() => {
-                const maxBar = Math.max(0, ...data.slice(0, barEndIndex).map(d => d.birds_falling));
-                const ticks = getRobustYTicks(maxBar);
+                const maxBar = Math.max(0, ...data.slice(0, barEndIndex + 1).map(d => d.birds_falling));
+                const paddedMax = maxBar * 1.05;
+                const ticks = getRobustYTicks(paddedMax);
                 const maxTick = ticks[ticks.length - 1];
                 return [0, maxTick];
               }}
@@ -533,7 +518,7 @@ export default function AnimatedExtinctionChartCopy() {
               // Add grid lines
               grid={{ stroke: '#e0e0e0', strokeDasharray: '3 3' }}
             >
-              <Label value={"Extinctions\nper 100\nYears"} position="top" offset={20} style={{ fill: '#888', fontSize: 13, fontWeight: 400, textAlign: 'right', whiteSpace: 'pre-line', lineHeight: 1.2 }} />
+              <Label value={'Extinctions per 100 Years'} position="top" offset={20} angle={0} style={{ fill: '#888', fontSize: 13, fontWeight: 400, textAlign: 'center' }} />
             </YAxis>
             <Tooltip content={<CustomTooltip barEndIndex={barEndIndex} />} />
             <Bar
@@ -551,7 +536,7 @@ export default function AnimatedExtinctionChartCopy() {
         {/* Move annotation labels below the x axis */}
         <div style={{ position: 'absolute', left: 0, bottom: 0, width: '100%', pointerEvents: 'none', zIndex: 10 }}>
           {annotations.map(({ year, label }) => {
-            const show = barEndIndex > data.findIndex(d => d.year >= year);
+            const show = barEndIndex >= data.findIndex(d => d.year >= year);
             if (!show) return null;
             if (!chartAreaRef.current || !data.length) return null;
             const chartRect = chartAreaRef.current.getBoundingClientRect();
@@ -572,7 +557,29 @@ export default function AnimatedExtinctionChartCopy() {
             const t = (binCenterYear - minYear) / (maxYear - minYear);
             const x = chartMarginLeft + t * innerWidth;
             // Move lines 1cm up, annotations 3cm up
-            const annotationTop = `calc(100% - 1cm)`;
+            const annotationTop = `calc(100% - 1.5cm)`;
+            // Format label to max 3 rows
+            function formatAnnotationLabel(text) {
+              const words = text.split(' ');
+              if (words.length <= 3) return [text];
+              const lines = [];
+              let line = '';
+              for (let i = 0; i < words.length; i++) {
+                if (lines.length === 2) {
+                  // Last line: join the rest
+                  lines.push(words.slice(i).join(' '));
+                  break;
+                }
+                if (line.length + words[i].length + 1 > 16 && line.length > 0) {
+                  lines.push(line);
+                  line = words[i];
+                } else {
+                  line += (line ? ' ' : '') + words[i];
+                }
+              }
+              if (line) lines.push(line);
+              return lines;
+            }
             return (
               <React.Fragment key={year}>
                 {/* Vertical line from x axis up to top of annotation label */}
@@ -580,10 +587,11 @@ export default function AnimatedExtinctionChartCopy() {
                   style={{
                     position: 'absolute',
                     left: x,
-                    bottom: '1cm',
+                    bottom: '1.5cm',
                     width: 0,
-                    height: '2cm',
-                    borderLeft: '1px solid #e0e0e0',
+                    height: '1cm', // shorten at top
+                    borderLeft: '1px solid #bbb',
+                    opacity: 0.8,
                     zIndex: 9,
                     pointerEvents: 'none',
                   }}
@@ -594,8 +602,9 @@ export default function AnimatedExtinctionChartCopy() {
                     left: x,
                     top: annotationTop,
                     transform: 'translateX(-50%)',
-                    fontSize: 13,
-                    color: '#888',
+                    fontSize: 15,
+                    color: '#111',
+                    opacity: 0.8,
                     background: 'none',
                     padding: 0,
                     margin: 0,
@@ -605,9 +614,7 @@ export default function AnimatedExtinctionChartCopy() {
                     pointerEvents: 'none',
                   }}
                 >
-                  {label.split(' ').map((word, i, arr) =>
-                    i < arr.length - 1 ? word + '\n' : word
-                  ).join('').split('\n').map((line, idx) => (
+                  {formatAnnotationLabel(label).map((line, idx) => (
                     <div key={idx}>{line}</div>
                   ))}
                 </div>
