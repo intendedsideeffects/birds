@@ -437,29 +437,21 @@ export default function AnimatedExtinctionChartCopy() {
   }
 
   return (
-    <div ref={chartContainerRef} style={{ width: "100vw", height: "100vh", position: "fixed", top: 0, left: 0, background: "#fff", zIndex: 0 }}>
-      {/* Slider row */}
-      <div style={{
-        ...controlsStyle,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 12,
-        minWidth: "300px"
-      }}>
+    <div ref={chartContainerRef} style={{ width: "100%", height: "700px", background: "transparent", zIndex: 0, position: "relative", marginTop: 48 }}>
+      <div style={{ width: "100%", maxWidth: 700, margin: "0 auto", paddingTop: 24, paddingBottom: 8, display: "flex", flexDirection: "column", alignItems: "center", zIndex: 2, position: "relative" }}>
         <input
           type="range"
           min="0"
-          max={data.length}
+          max={Math.max(0, data.length - 1)}
           value={barEndIndex}
           onChange={handleSliderChange}
           style={{
             ...sliderStyle,
-            marginTop: '0.5cm',
+            marginTop: 0,
           }}
         />
         <div style={{
-          marginTop: '-0.2cm',
+          marginTop: 8,
           fontSize: 15,
           color: '#444',
           opacity: 0.6,
@@ -490,14 +482,11 @@ export default function AnimatedExtinctionChartCopy() {
       `}</style>
 
       {/* Chart area */}
-      <div ref={chartAreaRef} style={{ width: "100%", height: "calc(100% - 110px)", position: "relative", marginTop: '120px' }}>
+      <div ref={chartAreaRef} style={{ width: "100%", height: "calc(100% - 80px)", position: "relative", marginTop: 0 }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={
-            (barEndIndex < data.length
-              ? data.map((d, i) => ({ ...d, birds_falling: i < barEndIndex ? d.birds_falling : 0, index: i, dataLength: data.length }))
-              : data.map((d, i) => ({ ...d, index: i, dataLength: data.length }))
-            )
-          } margin={{ top: 100, right: 40, left: 40, bottom: 160 }}>
+            data.map((d, i) => ({ ...d, birds_falling: i <= barEndIndex ? d.birds_falling : 0, index: i, dataLength: data.length }))
+          } margin={{ top: 100, right: 40, left: 40, bottom: 100 }}>
             {/* Light purple, half-transparent box for extinction rate range */}
             <rect
               x={0}
